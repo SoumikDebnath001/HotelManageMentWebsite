@@ -1,0 +1,298 @@
+erDiagram
+  admin {
+    String name
+    String email
+    String password
+    String token
+    Boolean isDefaultPassword
+    Boolean isActive
+    Boolean isDeleted
+    ObjectId _id
+    Date createdAt
+    Date updatedAt
+  }
+  amenity {
+    String amenityName
+    String description
+    String icon
+    ObjectId_FK_superadmin createdBy
+    Date createdOn
+    Array customFields
+    Boolean isActive
+    Boolean isDeleted
+    ObjectId _id
+  }
+  amenity ||--o{ superadmin : "createdBy"
+  CountryState {
+    String countryName
+    Array State
+    ObjectId _id
+  }
+  employee {
+    String name
+    String email
+    String role
+    String password
+    String token
+    ObjectId_FK_hotel hotelId
+    String image
+    Array customFields
+    Boolean isDefaultPassword
+    Boolean isActive
+    Boolean isDeleted
+    ObjectId _id
+  }
+  employee ||--o{ hotel : "hotelId"
+  hotel {
+    String hotelName
+    String description
+    String email
+    String mobileNumber
+    String address
+    String hotelCode
+    ObjectId_FK_CountryState countryId
+    String countryName
+    String stateName
+    String stateUniqueCode
+    String cityName
+    String cityUniqueCode
+    Number starRating
+    String amenities
+    String image
+    ObjectId_FK_admin adminId
+    ObjectId_FK_employee managerId
+    String managerName
+    String status
+    ObjectId_FK_superadmin approvedBy
+    Date approvedOn
+    String rejectReason
+    Array customFields
+    Boolean isActive
+    Boolean isDeleted
+    ObjectId _id
+    Date createdAt
+    Date updatedAt
+  }
+  hotel ||--o{ CountryState : "countryId"
+  hotel ||--o{ admin : "adminId"
+  hotel ||--o{ employee : "managerId"
+  hotel ||--o{ superadmin : "approvedBy"
+  hotelRoomBooking {
+    ObjectId_FK_user userId
+    String userName
+    ObjectId_FK_hotel hotelId
+    String hotelName
+    ObjectId_FK_rooms roomId
+    String roomNumber
+    String roomType
+    Date checkInDate
+    Date checkOutDate
+    Number numberOfNights
+    Number adults
+    Number children
+    Number pricePerNight
+    Number totalAmount
+    String offerCode
+    Number discountAmount
+    Number payableAmount
+    String paymentStatus
+    String bookingStatus
+    Date cancelledOn
+    String cancelReason
+    Date checkedInOn
+    Date checkedOutOn
+    Date bookedOn
+    Array customFields
+    Boolean isActive
+    Boolean isDeleted
+    ObjectId _id
+  }
+  hotelRoomBooking ||--o{ user : "userId"
+  hotelRoomBooking ||--o{ hotel : "hotelId"
+  hotelRoomBooking ||--o{ rooms : "roomId"
+  offer {
+    ObjectId_FK_hotel hotelId
+    String hotelName
+    String offerName
+    String offerCode
+    String description
+    String discountType
+    Number discountValue
+    Number maxDiscountAmount
+    Number minBookingAmount
+    Date validFrom
+    Date validTill
+    ObjectId_FK_employee createdBy
+    Date createdOn
+    Array customFields
+    Boolean isActive
+    Boolean isDeleted
+    ObjectId _id
+  }
+  offer ||--o{ hotel : "hotelId"
+  offer ||--o{ employee : "createdBy"
+  OTP {
+    String email
+    String otp
+    Date expiresAt
+    Boolean isUsed
+    ObjectId _id
+    Date createdAt
+    Date updatedAt
+  }
+  payment {
+    ObjectId_FK_hotelRoomBooking bookingId
+    ObjectId_FK_user userId
+    String userName
+    ObjectId_FK_hotel hotelId
+    String hotelName
+    ObjectId_FK_rooms roomId
+    String roomNumber
+    Number amount
+    String paymentMethod
+    String transactionId
+    String paymentStatus
+    Date paidOn
+    Date refundedOn
+    String refundReason
+    Array customFields
+    Boolean isActive
+    Boolean isDeleted
+    ObjectId _id
+  }
+  payment ||--o{ hotelRoomBooking : "bookingId"
+  payment ||--o{ user : "userId"
+  payment ||--o{ hotel : "hotelId"
+  payment ||--o{ rooms : "roomId"
+  review {
+    ObjectId_FK_user userId
+    String userName
+    ObjectId_FK_hotel hotelId
+    String hotelName
+    ObjectId_FK_hotelRoomBooking bookingId
+    Number rating
+    String review
+    Date reviewedOn
+    Date updatedOn
+    Array customFields
+    Boolean isActive
+    Boolean isDeleted
+    ObjectId _id
+  }
+  review ||--o{ user : "userId"
+  review ||--o{ hotel : "hotelId"
+  review ||--o{ hotelRoomBooking : "bookingId"
+  roomSelection {
+    ObjectId_FK_user userId
+    String userName
+    ObjectId_FK_hotel hotelId
+    String hotelName
+    ObjectId_FK_rooms roomId
+    String roomNumber
+    String roomType
+    Number pricePerNight
+    Date checkInDate
+    Date checkOutDate
+    Number adults
+    Number children
+    Boolean isFinal
+    Date selectedOn
+    Array customFields
+    Boolean isActive
+    Boolean isDeleted
+    ObjectId _id
+  }
+  roomSelection ||--o{ user : "userId"
+  roomSelection ||--o{ hotel : "hotelId"
+  roomSelection ||--o{ rooms : "roomId"
+  roomType {
+    String typeName
+    String description
+    Number basePrice
+    Number maxAdults
+    Number maxChildren
+    Number bedCount
+    ObjectId_FK_admin createdBy
+    Date createdOn
+    Array customFields
+    Boolean isActive
+    Boolean isDeleted
+    ObjectId _id
+  }
+  roomType ||--o{ admin : "createdBy"
+  rooms {
+    ObjectId_FK_hotel hotelId
+    String hotelName
+    String roomNumber
+    String roomType
+    Number floor
+    String description
+    Number pricePerNight
+    Number maxAdults
+    Number maxChildren
+    Number bedCount
+    String amenities
+    String image
+    String availabilityStatus
+    Array customFields
+    Boolean isActive
+    Boolean isDeleted
+    ObjectId _id
+  }
+  rooms ||--o{ hotel : "hotelId"
+  superadmin {
+    String name
+    String email
+    String password
+    String token
+    ObjectId _id
+    Date createdAt
+    Date updatedAt
+  }
+  user {
+    String firstMiddleName
+    String lastName
+    String email
+    String password
+    String image
+    String token
+    String gender
+    Date dateOfBirth
+    ObjectId_FK_Country nationalityid
+    String nationalityName
+    String maritalStatus
+    Date anniversary
+    ObjectId_FK_City cityId
+    String cityName
+    ObjectId_FK_State stateId
+    String stateName
+    String contact_mobileNumber
+    String contact_email
+    String documents_passportNumber
+    Date documents_passportExpiryDate
+    String documents_issuingCountry
+    String documents_panCardNumber
+    Boolean isActive
+    Boolean isDeleted
+    ObjectId _id
+  }
+  user ||--o{ Country : "nationalityid"
+  user ||--o{ City : "cityId"
+  user ||--o{ State : "stateId"
+  wishlist {
+    ObjectId_FK_user userId
+    String userName
+    ObjectId_FK_hotel hotelId
+    String hotelName
+    ObjectId_FK_rooms roomId
+    String roomNumber
+    String roomType
+    Date addedOn
+    Array customFields
+    Boolean isActive
+    Boolean isDeleted
+    ObjectId _id
+  }
+  wishlist ||--o{ user : "userId"
+  wishlist ||--o{ hotel : "hotelId"
+  wishlist ||--o{ rooms : "roomId"

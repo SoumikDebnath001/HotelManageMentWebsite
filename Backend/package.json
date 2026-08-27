@@ -1,0 +1,43 @@
+{
+  "name": "smart-market",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "nodemon app.js"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.577.0",
+    "aws-sdk": "^2.1624.0",
+    "bcryptjs": "^2.4.3",
+    "colors": "^1.4.0",
+    "colours": "^0.6.0-2",
+    "cookie-parser": "~1.4.4",
+    "cors": "^2.8.5",
+    "debug": "~2.6.9",
+    "dotenv": "^16.4.5",
+    "express": "~4.16.1",
+    "express-validator": "^7.0.1",
+    "handlebars": "^4.7.9",
+    "http-errors": "~1.6.3",
+    "id-auto-increment": "^1.0.1",
+    "jade": "~1.11.0",
+    "jsonwebtoken": "^9.0.2",
+    "latest": "^0.2.0",
+    "moment": "^2.30.1",
+    "mongoose": "^8.3.1",
+    "morgan": "~1.9.1",
+    "multer": "^1.4.5-lts.1",
+    "next": "^15.3.3",
+    "node-cron": "^3.0.3",
+    "node-input-validator": "^4.5.1",
+    "nodemailer": "^9.0.4",
+    "nodemon": "^3.1.0",
+    "otp-generator": "^4.0.1",
+    "password-hash": "^1.2.2",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "socket.io": "^4.7.5",
+    "twilio": "^5.0.3",
+    "zod": "^4.4.3"
+  }
+}

@@ -1,0 +1,2571 @@
+{
+  "info": {
+    "name": "Hotel Management System",
+    "description": "Complete API collection for Hotel Management System.\n\nAuthentication: Protected routes require two headers:\n- authorization: <token>\n- usertype: SuperAdmin | Admin | Employee | User\n\nWorkflow:\n1. Register/Login to get a token\n2. Set the token in collection variables\n3. Use the appropriate folder to test routes\n\nBase URL: http://localhost:6587/api/v1",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:6587/api/v1" },
+    { "key": "superAdminToken", "value": "" },
+    { "key": "adminToken", "value": "" },
+    { "key": "managerToken", "value": "" },
+    { "key": "employeeToken", "value": "" },
+    { "key": "userToken", "value": "" },
+    { "key": "hotelId", "value": "" },
+    { "key": "roomId", "value": "" },
+    { "key": "bookingId", "value": "" },
+    { "key": "adminId", "value": "" },
+    { "key": "managerId", "value": "" },
+    { "key": "userId", "value": "" },
+    { "key": "wishlistId", "value": "" },
+    { "key": "selectionId", "value": "" },
+    { "key": "reviewId", "value": "" },
+    { "key": "amenityId", "value": "" },
+    { "key": "roomTypeId", "value": "" },
+    { "key": "offerId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "🌐 Public Routes (No Auth)",
+      "description": "These routes do NOT require authentication. Use them to register, login, and browse hotels publicly.",
+      "item": [
+        {
+          "name": "SuperAdmin - Register",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Platform Admin\",\n  \"email\": \"superadmin@hotel.com\",\n  \"password\": \"SuperAdmin@123\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/superadmin/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["superadmin", "register"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "SuperAdmin - Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if(jsonData.data && jsonData.data.email) {",
+                  "  pm.collectionVariables.set('superAdminEmail', jsonData.data.email);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"superadmin@hotel.com\",\n  \"password\": \"SuperAdmin@123\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/superadmin/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["superadmin", "login"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "SuperAdmin - Verify OTP",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if(jsonData.token) {",
+                  "  pm.collectionVariables.set('superAdminToken', jsonData.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"superadmin@hotel.com\",\n  \"otp\": \"123456\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/superadmin/verifyOtp",
+              "host": ["{{baseUrl}}"],
+              "path": ["superadmin", "verifyOtp"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Admin - Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if(jsonData.data && jsonData.data.token) {",
+                  "  pm.collectionVariables.set('adminToken', jsonData.data.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"hoteladmin@hotel.com\",\n  \"password\": \"hoteladmin@hotel.com\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "login"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Employee - Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if(jsonData.data && jsonData.data.token) {",
+                  "  pm.collectionVariables.set('employeeToken', jsonData.data.token);",
+                  "  if(jsonData.data.role === 'manager') {",
+                  "    pm.collectionVariables.set('managerToken', jsonData.data.token);",
+                  "  }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"manager@hotel.com\",\n  \"password\": \"manager@hotel.com\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/employee/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["employee", "login"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Employee - Forgot Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"manager@hotel.com\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/employee/forgotPassword",
+              "host": ["{{baseUrl}}"],
+              "path": ["employee", "forgotPassword"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Employee - Verify OTP",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"manager@hotel.com\",\n  \"otp\": \"123456\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/employee/verifyOtp",
+              "host": ["{{baseUrl}}"],
+              "path": ["employee", "verifyOtp"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "User - Register",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if(jsonData.data && jsonData.data.token) {",
+                  "  pm.collectionVariables.set('userToken', jsonData.data.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"testuser@gmail.com\",\n  \"password\": \"Test@1234\",\n  \"firstMiddleName\": \"John\",\n  \"lastName\": \"Doe\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/user/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["user", "register"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "User - Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if(jsonData.data && jsonData.data.token) {",
+                  "  pm.collectionVariables.set('userToken', jsonData.data.token);",
+                  "  pm.collectionVariables.set('userId', jsonData.data._id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"testuser@gmail.com\",\n  \"password\": \"Test@1234\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/user/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["user", "login"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "User - Forgot Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"testuser@gmail.com\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/user/forgotPassword",
+              "host": ["{{baseUrl}}"],
+              "path": ["user", "forgotPassword"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "User - Verify OTP",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"testuser@gmail.com\",\n  \"otp\": \"123456\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/user/verifyOtp",
+              "host": ["{{baseUrl}}"],
+              "path": ["user", "verifyOtp"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Public - Get All Hotels",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/public/getAllHotels?page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["public", "getAllHotels"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Public - Get Hotel By Id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/public/getHotelById?hotelId={{hotelId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["public", "getHotelById"],
+              "query": [
+                { "key": "hotelId", "value": "{{hotelId}}" }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Public - Get Rooms By Hotel Id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/public/getRoomsByHotelId?hotelId={{hotelId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["public", "getRoomsByHotelId"],
+              "query": [
+                { "key": "hotelId", "value": "{{hotelId}}" }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Public - Room Availability",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/public/roomAvailability?hotelId={{hotelId}}&availabilityStatus=available",
+              "host": ["{{baseUrl}}"],
+              "path": ["public", "roomAvailability"],
+              "query": [
+                { "key": "hotelId", "value": "{{hotelId}}" },
+                { "key": "availabilityStatus", "value": "available", "description": "Options: available | booked | maintenance" }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Public - Search Hotels",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/public/search?query=luxury&page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["public", "search"],
+              "query": [
+                { "key": "query", "value": "luxury" },
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Public - Get Room Booked Dates",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/public/getRoomBookedDates?roomId={{roomId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["public", "getRoomBookedDates"],
+              "query": [
+                { "key": "roomId", "value": "{{roomId}}" }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "🔐 SuperAdmin",
+      "description": "Platform-level administration. Requires superAdminToken.",
+      "auth": {
+        "type": "noauth"
+      },
+      "item": [
+        {
+          "name": "Profile & Dashboard",
+          "item": [
+            {
+              "name": "Get My Profile",
+              "request": {
+                "method": "GET",
+                "header": [
+                  { "key": "authorization", "value": "{{superAdminToken}}" },
+                  { "key": "usertype", "value": "SuperAdmin" }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/superadmin/getMyProfile",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["superadmin", "getMyProfile"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Dashboard Stats",
+              "request": {
+                "method": "GET",
+                "header": [
+                  { "key": "authorization", "value": "{{superAdminToken}}" },
+                  { "key": "usertype", "value": "SuperAdmin" }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/superadmin/getDashboard",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["superadmin", "getDashboard"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Booking Report",
+              "request": {
+                "method": "GET",
+                "header": [
+                  { "key": "authorization", "value": "{{superAdminToken}}" },
+                  { "key": "usertype", "value": "SuperAdmin" }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/superadmin/bookingReport?startDate=2025-01-01&endDate=2026-12-31",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["superadmin", "bookingReport"],
+                  "query": [
+                    { "key": "startDate", "value": "2025-01-01" },
+                    { "key": "endDate", "value": "2026-12-31" }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Revenue Report",
+              "request": {
+                "method": "GET",
+                "header": [
+                  { "key": "authorization", "value": "{{superAdminToken}}" },
+                  { "key": "usertype", "value": "SuperAdmin" }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/superadmin/revenueReport?startDate=2025-01-01&endDate=2026-12-31",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["superadmin", "revenueReport"],
+                  "query": [
+                    { "key": "startDate", "value": "2025-01-01" },
+                    { "key": "endDate", "value": "2026-12-31" }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Customer Report",
+              "request": {
+                "method": "GET",
+                "header": [
+                  { "key": "authorization", "value": "{{superAdminToken}}" },
+                  { "key": "usertype", "value": "SuperAdmin" }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/superadmin/customerReport",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["superadmin", "customerReport"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Hotel Report",
+              "request": {
+                "method": "GET",
+                "header": [
+                  { "key": "authorization", "value": "{{superAdminToken}}" },
+                  { "key": "usertype", "value": "SuperAdmin" }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/superadmin/hotelReport",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["superadmin", "hotelReport"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Room Occupancy Report",
+              "request": {
+                "method": "GET",
+                "header": [
+                  { "key": "authorization", "value": "{{superAdminToken}}" },
+                  { "key": "usertype", "value": "SuperAdmin" }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/superadmin/roomOccupancyReport",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["superadmin", "roomOccupancyReport"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Payment Report",
+              "request": {
+                "method": "GET",
+                "header": [
+                  { "key": "authorization", "value": "{{superAdminToken}}" },
+                  { "key": "usertype", "value": "SuperAdmin" }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/superadmin/paymentReport",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["superadmin", "paymentReport"]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Hotel Admin Management",
+          "item": [
+            {
+              "name": "Create Admin (Hotel Owner)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "var jsonData = pm.response.json();",
+                      "if(jsonData.data && jsonData.data._id) {",
+                      "  pm.collectionVariables.set('adminId', jsonData.data._id);",
+                      "  pm.collectionVariables.set('adminToken', jsonData.data.token);",
+                      "}"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "authorization", "value": "{{superAdminToken}}" },
+                  { "key": "usertype", "value": "SuperAdmin" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"hoteladmin@hotel.com\",\n  \"name\": \"Grand Hotel Admin\"\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/superadmin/createAdmin",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["superadmin", "createAdmin"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get All Admins",
+              "request": {
+                "method": "GET",
+                "header": [
+                  { "key": "authorization", "value": "{{superAdminToken}}" },
+                  { "key": "usertype", "value": "SuperAdmin" }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/superadmin/getAllAdmins",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["superadmin", "getAllAdmins"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Update Admin",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "authorization", "value": "{{superAdminToken}}" },
+                  { "key": "usertype", "value": "SuperAdmin" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"adminId\": \"{{adminId}}\",\n  \"name\": \"Updated Hotel Admin Name\",\n  \"isActive\": true\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/superadmin/updateAdmin",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["superadmin", "updateAdmin"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Admin",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "authorization", "value": "{{superAdminToken}}" },
+                  { "key": "usertype", "value": "SuperAdmin" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"adminId\": \"{{adminId}}\"\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/superadmin/deleteAdmin",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["superadmin", "deleteAdmin"]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "User Management",
+          "item": [
+            {
+              "name": "Get All Users",
+              "request": {
+                "method": "GET",
+                "header": [
+                  { "key": "authorization", "value": "{{superAdminToken}}" },
+                  { "key": "usertype", "value": "SuperAdmin" }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/superadmin/getAllUsers",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["superadmin", "getAllUsers"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Update User Status",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "authorization", "value": "{{superAdminToken}}" },
+                  { "key": "usertype", "value": "SuperAdmin" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"userId\": \"{{userId}}\",\n  \"isActive\": false\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/superadmin/updateUserStatus",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["superadmin", "updateUserStatus"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Delete User",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "authorization", "value": "{{superAdminToken}}" },
+                  { "key": "usertype", "value": "SuperAdmin" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"userId\": \"{{userId}}\"\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/superadmin/deleteUser",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["superadmin", "deleteUser"]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Hotel Management",
+          "item": [
+            {
+              "name": "Get All Hotels",
+              "request": {
+                "method": "GET",
+                "header": [
+                  { "key": "authorization", "value": "{{superAdminToken}}" },
+                  { "key": "usertype", "value": "SuperAdmin" }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/superadmin/getAllHotels?page=1&limit=10",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["superadmin", "getAllHotels"],
+                  "query": [
+                    { "key": "page", "value": "1" },
+                    { "key": "limit", "value": "10" }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Approve / Reject Hotel",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "authorization", "value": "{{superAdminToken}}" },
+                  { "key": "usertype", "value": "SuperAdmin" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"hotelId\": \"{{hotelId}}\",\n  \"status\": \"approved\",\n  \"countryId\": \"IN\",\n  \"stateName\": \"Maharashtra\",\n  \"cityName\": \"Mumbai\"\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/superadmin/approveHotel",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["superadmin", "approveHotel"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Update Hotel",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "authorization", "value": "{{superAdminToken}}" },
+                  { "key": "usertype", "value": "SuperAdmin" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"hotelId\": \"{{hotelId}}\",\n  \"hotelName\": \"Grand Luxury Resort Updated\",\n  \"description\": \"Updated by SuperAdmin\"\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/superadmin/updateHotel",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["superadmin", "updateHotel"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Hotel",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "authorization", "value": "{{superAdminToken}}" },
+                  { "key": "usertype", "value": "SuperAdmin" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"hotelId\": \"{{hotelId}}\"\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/superadmin/deleteHotel",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["superadmin", "deleteHotel"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Toggle Hotel Status",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "authorization", "value": "{{superAdminToken}}" },
+                  { "key": "usertype", "value": "SuperAdmin" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"hotelId\": \"{{hotelId}}\",\n  \"isActive\": true\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/superadmin/toggleHotelStatus",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["superadmin", "toggleHotelStatus"]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Employee Management",
+          "item": [
+            {
+              "name": "Add Employee",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "authorization", "value": "{{superAdminToken}}" },
+                  { "key": "usertype", "value": "SuperAdmin" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"John Staff\",\n  \"email\": \"staff@hotel.com\",\n  \"role\": \"receptionist\"\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/superadmin/addEmployee",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["superadmin", "addEmployee"]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Country/State Master",
+          "item": [
+            {
+              "name": "Add Country State",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "authorization", "value": "{{superAdminToken}}" },
+                  { "key": "usertype", "value": "SuperAdmin" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"countryName\": \"India\",\n  \"countryCode\": \"IN\",\n  \"states\": [\n    { \"stateName\": \"Maharashtra\", \"stateCode\": \"MH\" },\n    { \"stateName\": \"Karnataka\", \"stateCode\": \"KA\" },\n    { \"stateName\": \"Delhi\", \"stateCode\": \"DL\" }\n  ]\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/superadmin/addCountryState",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["superadmin", "addCountryState"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get All Country States",
+              "request": {
+                "method": "GET",
+                "header": [
+                  { "key": "authorization", "value": "{{superAdminToken}}" },
+                  { "key": "usertype", "value": "SuperAdmin" }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/superadmin/getAllCountryStates",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["superadmin", "getAllCountryStates"]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Amenities Master",
+          "item": [
+            {
+              "name": "Create Amenity",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "var jsonData = pm.response.json();",
+                      "if(jsonData.data && jsonData.data._id) {",
+                      "  pm.collectionVariables.set('amenityId', jsonData.data._id);",
+                      "}"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "authorization", "value": "{{superAdminToken}}" },
+                  { "key": "usertype", "value": "SuperAdmin" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"amenityName\": \"Free WiFi\",\n  \"description\": \"High-speed wireless internet\",\n  \"icon\": \"wifi\",\n  \"category\": \"Technology\"\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/superadmin/createAmenity",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["superadmin", "createAmenity"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get All Amenities",
+              "request": {
+                "method": "GET",
+                "header": [
+                  { "key": "authorization", "value": "{{superAdminToken}}" },
+                  { "key": "usertype", "value": "SuperAdmin" }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/superadmin/getAmenities",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["superadmin", "getAmenities"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Update Amenity",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "authorization", "value": "{{superAdminToken}}" },
+                  { "key": "usertype", "value": "SuperAdmin" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"amenityId\": \"{{amenityId}}\",\n  \"amenityName\": \"Premium WiFi\",\n  \"description\": \"Upgraded high-speed internet\"\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/superadmin/updateAmenity",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["superadmin", "updateAmenity"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Amenity",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "authorization", "value": "{{superAdminToken}}" },
+                  { "key": "usertype", "value": "SuperAdmin" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"amenityId\": \"{{amenityId}}\"\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/superadmin/deleteAmenity",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["superadmin", "deleteAmenity"]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Room Type Master",
+          "item": [
+            {
+              "name": "Create Room Type",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "var jsonData = pm.response.json();",
+                      "if(jsonData.data && jsonData.data._id) {",
+                      "  pm.collectionVariables.set('roomTypeId', jsonData.data._id);",
+                      "}"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "authorization", "value": "{{superAdminToken}}" },
+                  { "key": "usertype", "value": "SuperAdmin" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"typeName\": \"Deluxe Suite\",\n  \"description\": \"Spacious deluxe suite with city view\"\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/superadmin/createRoomType",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["superadmin", "createRoomType"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get All Room Types",
+              "request": {
+                "method": "GET",
+                "header": [
+                  { "key": "authorization", "value": "{{superAdminToken}}" },
+                  { "key": "usertype", "value": "SuperAdmin" }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/superadmin/getRoomTypes",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["superadmin", "getRoomTypes"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Update Room Type",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "authorization", "value": "{{superAdminToken}}" },
+                  { "key": "usertype", "value": "SuperAdmin" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"roomTypeId\": \"{{roomTypeId}}\",\n  \"typeName\": \"Premium Deluxe Suite\"\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/superadmin/updateRoomType",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["superadmin", "updateRoomType"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Room Type",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "authorization", "value": "{{superAdminToken}}" },
+                  { "key": "usertype", "value": "SuperAdmin" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"roomTypeId\": \"{{roomTypeId}}\"\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/superadmin/deleteRoomType",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["superadmin", "deleteRoomType"]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Bookings & Offers",
+          "item": [
+            {
+              "name": "Get All Bookings",
+              "request": {
+                "method": "GET",
+                "header": [
+                  { "key": "authorization", "value": "{{superAdminToken}}" },
+                  { "key": "usertype", "value": "SuperAdmin" }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/superadmin/getAllBookings?page=1&limit=20",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["superadmin", "getAllBookings"],
+                  "query": [
+                    { "key": "page", "value": "1" },
+                    { "key": "limit", "value": "20" }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get All Offers",
+              "request": {
+                "method": "GET",
+                "header": [
+                  { "key": "authorization", "value": "{{superAdminToken}}" },
+                  { "key": "usertype", "value": "SuperAdmin" }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/superadmin/getAllOffers?page=1&limit=20",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["superadmin", "getAllOffers"],
+                  "query": [
+                    { "key": "page", "value": "1" },
+                    { "key": "limit", "value": "20" }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "🏨 Hotel Admin",
+      "description": "Hotel owner administration. Requires adminToken + usertype: Admin.",
+      "item": [
+        {
+          "name": "Profile",
+          "item": [
+            {
+              "name": "Get My Profile",
+              "request": {
+                "method": "GET",
+                "header": [
+                  { "key": "authorization", "value": "{{adminToken}}" },
+                  { "key": "usertype", "value": "Admin" }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/getMyProfile",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "getMyProfile"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Send Change Password OTP",
+              "request": {
+                "method": "GET",
+                "header": [
+                  { "key": "authorization", "value": "{{adminToken}}" },
+                  { "key": "usertype", "value": "Admin" }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/sendChangePasswordOtp",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "sendChangePasswordOtp"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Change Password",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "authorization", "value": "{{adminToken}}" },
+                  { "key": "usertype", "value": "Admin" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"otp\": \"123456\",\n  \"newPassword\": \"NewSecure@123\"\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/admin/changePassword",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "changePassword"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get My Dashboard Stats",
+              "request": {
+                "method": "GET",
+                "header": [
+                  { "key": "authorization", "value": "{{adminToken}}" },
+                  { "key": "usertype", "value": "Admin" }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/getMyDashboardStats",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "getMyDashboardStats"]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Hotel CRUD",
+          "item": [
+            {
+              "name": "Create Hotel",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "var jsonData = pm.response.json();",
+                      "if(jsonData.data && jsonData.data._id) {",
+                      "  pm.collectionVariables.set('hotelId', jsonData.data._id);",
+                      "}"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "authorization", "value": "{{adminToken}}" },
+                  { "key": "usertype", "value": "Admin" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"hotelName\": \"Grand Luxury Resort & Spa\",\n  \"description\": \"A 5-star luxury resort with world-class amenities, infinity pool, and ocean views.\",\n  \"email\": \"info@grandluxury.com\",\n  \"mobileNumber\": \"+91-9876543210\",\n  \"address\": \"123 Marine Drive, Mumbai, Maharashtra 400001\",\n  \"starRating\": 5,\n  \"amenities\": [\"wifi\", \"pool\", \"spa\", \"gym\", \"restaurant\", \"parking\"]\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/admin/createHotel",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "createHotel"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get My Hotels",
+              "request": {
+                "method": "GET",
+                "header": [
+                  { "key": "authorization", "value": "{{adminToken}}" },
+                  { "key": "usertype", "value": "Admin" }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/getMyHotels",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "getMyHotels"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Update Hotel",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "authorization", "value": "{{adminToken}}" },
+                  { "key": "usertype", "value": "Admin" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"hotelId\": \"{{hotelId}}\",\n  \"hotelName\": \"Grand Luxury Resort & Spa - Premium\",\n  \"description\": \"Updated luxury resort description with new premium features.\",\n  \"starRating\": 5,\n  \"amenities\": [\"wifi\", \"pool\", \"spa\", \"gym\", \"restaurant\", \"parking\", \"bar\"]\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/admin/updateHotel",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "updateHotel"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Hotel",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "authorization", "value": "{{adminToken}}" },
+                  { "key": "usertype", "value": "Admin" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"hotelId\": \"{{hotelId}}\"\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/admin/deleteHotel",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "deleteHotel"]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Manager CRUD",
+          "item": [
+            {
+              "name": "Create Manager",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "var jsonData = pm.response.json();",
+                      "if(jsonData.data && jsonData.data._id) {",
+                      "  pm.collectionVariables.set('managerId', jsonData.data._id);",
+                      "  pm.collectionVariables.set('managerToken', jsonData.data.token);",
+                      "}"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "authorization", "value": "{{adminToken}}" },
+                  { "key": "usertype", "value": "Admin" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"manager@hotel.com\",\n  \"hotelId\": \"{{hotelId}}\",\n  \"name\": \"Raj Kumar - Hotel Manager\"\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/admin/createManager",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "createManager"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get My Managers",
+              "request": {
+                "method": "GET",
+                "header": [
+                  { "key": "authorization", "value": "{{adminToken}}" },
+                  { "key": "usertype", "value": "Admin" }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/getMyManagers",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "getMyManagers"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Update Manager",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "authorization", "value": "{{adminToken}}" },
+                  { "key": "usertype", "value": "Admin" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"managerId\": \"{{managerId}}\",\n  \"name\": \"Raj Kumar - Senior Manager\",\n  \"isActive\": true\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/admin/updateManager",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "updateManager"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Manager",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "authorization", "value": "{{adminToken}}" },
+                  { "key": "usertype", "value": "Admin" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"managerId\": \"{{managerId}}\"\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/admin/deleteManager",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "deleteManager"]
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "👔 Manager",
+      "description": "Hotel manager operations. Requires managerToken + usertype: Employee. Manager must login via Employee Login.",
+      "item": [
+        {
+          "name": "Hotel",
+          "item": [
+            {
+              "name": "Register Hotel (via Manager)",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "authorization", "value": "{{managerToken}}" },
+                  { "key": "usertype", "value": "Employee" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"hotelName\": \"Seaside Inn & Suites\",\n  \"description\": \"Cozy beachside inn with modern amenities\",\n  \"email\": \"contact@seasideinn.com\",\n  \"mobileNumber\": \"+91-8765432109\",\n  \"address\": \"45 Beach Road, Goa 403001\",\n  \"starRating\": 4\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/manager/registerHotel",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["manager", "registerHotel"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get My Hotels",
+              "request": {
+                "method": "GET",
+                "header": [
+                  { "key": "authorization", "value": "{{managerToken}}" },
+                  { "key": "usertype", "value": "Employee" }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/manager/getMyHotels",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["manager", "getMyHotels"]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Rooms",
+          "item": [
+            {
+              "name": "Create Hotel Room",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "var jsonData = pm.response.json();",
+                      "if(jsonData.data && jsonData.data._id) {",
+                      "  pm.collectionVariables.set('roomId', jsonData.data._id);",
+                      "}"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "authorization", "value": "{{managerToken}}" },
+                  { "key": "usertype", "value": "Employee" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"hotelId\": \"{{hotelId}}\",\n  \"roomNumber\": \"201\",\n  \"roomType\": \"deluxe\",\n  \"pricePerNight\": 4500,\n  \"description\": \"Deluxe room with king bed and balcony view\",\n  \"maxAdults\": 2,\n  \"maxChildren\": 1,\n  \"amenities\": [\"AC\", \"TV\", \"Mini Bar\", \"WiFi\", \"Balcony\"],\n  \"floor\": 2,\n  \"beds\": 1\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/manager/createHotelRoom",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["manager", "createHotelRoom"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Hotel Rooms",
+              "request": {
+                "method": "GET",
+                "header": [
+                  { "key": "authorization", "value": "{{managerToken}}" },
+                  { "key": "usertype", "value": "Employee" }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/manager/getHotelRooms?hotelId={{hotelId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["manager", "getHotelRooms"],
+                  "query": [
+                    { "key": "hotelId", "value": "{{hotelId}}" }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Update Hotel Room",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "authorization", "value": "{{managerToken}}" },
+                  { "key": "usertype", "value": "Employee" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"roomId\": \"{{roomId}}\",\n  \"roomType\": \"suite\",\n  \"pricePerNight\": 7500,\n  \"description\": \"Upgraded premium suite with jacuzzi\",\n  \"availabilityStatus\": \"available\"\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/manager/updateHotelRoom",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["manager", "updateHotelRoom"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Hotel Room",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "authorization", "value": "{{managerToken}}" },
+                  { "key": "usertype", "value": "Employee" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"roomId\": \"{{roomId}}\"\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/manager/deleteHotelRooms",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["manager", "deleteHotelRooms"]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Bookings",
+          "item": [
+            {
+              "name": "Get Hotel Bookings",
+              "request": {
+                "method": "GET",
+                "header": [
+                  { "key": "authorization", "value": "{{managerToken}}" },
+                  { "key": "usertype", "value": "Employee" }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/manager/getHotelBookings?hotelId={{hotelId}}&page=1&limit=20",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["manager", "getHotelBookings"],
+                  "query": [
+                    { "key": "hotelId", "value": "{{hotelId}}" },
+                    { "key": "page", "value": "1" },
+                    { "key": "limit", "value": "20" },
+                    { "key": "bookingStatus", "value": "booked", "description": "Options: booked | checkedIn | checkedOut | cancelled", "disabled": true }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Check-In Booking",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "authorization", "value": "{{managerToken}}" },
+                  { "key": "usertype", "value": "Employee" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"bookingId\": \"{{bookingId}}\"\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/manager/checkInBooking",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["manager", "checkInBooking"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Check-Out Booking",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "authorization", "value": "{{managerToken}}" },
+                  { "key": "usertype", "value": "Employee" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"bookingId\": \"{{bookingId}}\"\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/manager/checkOutBooking",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["manager", "checkOutBooking"]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Payments",
+          "item": [
+            {
+              "name": "Refund Payment",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "authorization", "value": "{{managerToken}}" },
+                  { "key": "usertype", "value": "Employee" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"bookingId\": \"{{bookingId}}\"\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/manager/refundPayment",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["manager", "refundPayment"]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Offers",
+          "item": [
+            {
+              "name": "Create Offer",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "var jsonData = pm.response.json();",
+                      "if(jsonData.data && jsonData.data._id) {",
+                      "  pm.collectionVariables.set('offerId', jsonData.data._id);",
+                      "}"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "authorization", "value": "{{managerToken}}" },
+                  { "key": "usertype", "value": "Employee" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"hotelId\": \"{{hotelId}}\",\n  \"offerName\": \"Summer Special 20% Off\",\n  \"offerCode\": \"SUMMER20\",\n  \"discountType\": \"percentage\",\n  \"discountValue\": 20,\n  \"description\": \"Get 20% off on all room bookings this summer!\",\n  \"startDate\": \"2026-06-01\",\n  \"endDate\": \"2026-09-30\",\n  \"minBookingAmount\": 2000,\n  \"maxDiscountAmount\": 5000\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/manager/createOffer",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["manager", "createOffer"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get My Offers",
+              "request": {
+                "method": "GET",
+                "header": [
+                  { "key": "authorization", "value": "{{managerToken}}" },
+                  { "key": "usertype", "value": "Employee" }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/manager/getMyOffers?page=1&limit=10",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["manager", "getMyOffers"],
+                  "query": [
+                    { "key": "page", "value": "1" },
+                    { "key": "limit", "value": "10" }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Update Offer",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "authorization", "value": "{{managerToken}}" },
+                  { "key": "usertype", "value": "Employee" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"offerId\": \"{{offerId}}\",\n  \"offerName\": \"Mega Summer Sale 25% Off\",\n  \"discountType\": \"percentage\",\n  \"discountValue\": 25\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/manager/updateOffer",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["manager", "updateOffer"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Offer",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "authorization", "value": "{{managerToken}}" },
+                  { "key": "usertype", "value": "Employee" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"offerId\": \"{{offerId}}\"\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/manager/deleteOffer",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["manager", "deleteOffer"]
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "👤 Employee",
+      "description": "Employee routes. Requires employeeToken + usertype: Employee.",
+      "item": [
+        {
+          "name": "Get My Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "authorization", "value": "{{employeeToken}}" },
+              { "key": "usertype", "value": "Employee" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/employee/getMyProfile",
+              "host": ["{{baseUrl}}"],
+              "path": ["employee", "getMyProfile"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Change Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "authorization", "value": "{{employeeToken}}" },
+              { "key": "usertype", "value": "Employee" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"oldPassword\": \"manager@hotel.com\",\n  \"newPassword\": \"NewManager@123\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/employee/changePassword",
+              "host": ["{{baseUrl}}"],
+              "path": ["employee", "changePassword"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "🧑 User",
+      "description": "User (Customer) routes. Requires userToken + usertype: User.",
+      "item": [
+        {
+          "name": "Profile",
+          "item": [
+            {
+              "name": "Get My Profile",
+              "request": {
+                "method": "GET",
+                "header": [
+                  { "key": "authorization", "value": "{{userToken}}" },
+                  { "key": "usertype", "value": "User" }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/user/getMyProfile",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["user", "getMyProfile"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Update My Profile",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "authorization", "value": "{{userToken}}" },
+                  { "key": "usertype", "value": "User" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"firstMiddleName\": \"John\",\n  \"lastName\": \"Doe\",\n  \"gender\": \"Male\",\n  \"dateOfBirth\": \"1995-06-15\",\n  \"nationalityName\": \"Indian\",\n  \"maritalStatus\": \"Single\",\n  \"cityName\": \"Mumbai\",\n  \"stateName\": \"Maharashtra\",\n  \"contact\": {\n    \"mobileNumber\": \"+91-9876543210\",\n    \"email\": \"testuser@gmail.com\"\n  },\n  \"documents\": {\n    \"passportNumber\": \"A12345678\",\n    \"passportExpiryDate\": \"2030-12-31\",\n    \"issuingCountry\": \"India\",\n    \"panCardNumber\": \"ABCDE1234F\"\n  }\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/user/updateMyProfile",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["user", "updateMyProfile"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Change Password",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "authorization", "value": "{{userToken}}" },
+                  { "key": "usertype", "value": "User" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"oldPassword\": \"Test@1234\",\n  \"newPassword\": \"NewTest@5678\"\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/user/changePassword",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["user", "changePassword"]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Hotels & Rooms",
+          "item": [
+            {
+              "name": "Get All Hotels",
+              "request": {
+                "method": "GET",
+                "header": [
+                  { "key": "authorization", "value": "{{userToken}}" },
+                  { "key": "usertype", "value": "User" }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/user/getAllHotels?page=1&limit=10",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["user", "getAllHotels"],
+                  "query": [
+                    { "key": "page", "value": "1" },
+                    { "key": "limit", "value": "10" }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Hotel By Id",
+              "request": {
+                "method": "GET",
+                "header": [
+                  { "key": "authorization", "value": "{{userToken}}" },
+                  { "key": "usertype", "value": "User" }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/user/getHotelById?hotelId={{hotelId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["user", "getHotelById"],
+                  "query": [
+                    { "key": "hotelId", "value": "{{hotelId}}" }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Rooms By Hotel Id",
+              "request": {
+                "method": "GET",
+                "header": [
+                  { "key": "authorization", "value": "{{userToken}}" },
+                  { "key": "usertype", "value": "User" }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/user/getRoomsByHotelId?hotelId={{hotelId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["user", "getRoomsByHotelId"],
+                  "query": [
+                    { "key": "hotelId", "value": "{{hotelId}}" }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Room Availability",
+              "request": {
+                "method": "GET",
+                "header": [
+                  { "key": "authorization", "value": "{{userToken}}" },
+                  { "key": "usertype", "value": "User" }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/user/roomAvailability?hotelId={{hotelId}}&availabilityStatus=available",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["user", "roomAvailability"],
+                  "query": [
+                    { "key": "hotelId", "value": "{{hotelId}}" },
+                    { "key": "availabilityStatus", "value": "available", "description": "Options: available | booked | maintenance" }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Room By Id",
+              "request": {
+                "method": "GET",
+                "header": [
+                  { "key": "authorization", "value": "{{userToken}}" },
+                  { "key": "usertype", "value": "User" }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/user/getRoomById?roomId={{roomId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["user", "getRoomById"],
+                  "query": [
+                    { "key": "roomId", "value": "{{roomId}}" }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Search Hotels",
+              "request": {
+                "method": "GET",
+                "header": [
+                  { "key": "authorization", "value": "{{userToken}}" },
+                  { "key": "usertype", "value": "User" }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/user/search?query=luxury&page=1&limit=10",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["user", "search"],
+                  "query": [
+                    { "key": "query", "value": "luxury" },
+                    { "key": "page", "value": "1" },
+                    { "key": "limit", "value": "10" }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Masters (Amenities & Room Types)",
+          "item": [
+            {
+              "name": "Get Amenities",
+              "request": {
+                "method": "GET",
+                "header": [
+                  { "key": "authorization", "value": "{{userToken}}" },
+                  { "key": "usertype", "value": "User" }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/user/getAmenities",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["user", "getAmenities"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Room Types",
+              "request": {
+                "method": "GET",
+                "header": [
+                  { "key": "authorization", "value": "{{userToken}}" },
+                  { "key": "usertype", "value": "User" }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/user/getRoomTypes",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["user", "getRoomTypes"]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "❤️ Wishlist (Liked Hotels)",
+          "item": [
+            {
+              "name": "Add To Wishlist",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "var jsonData = pm.response.json();",
+                      "if(jsonData.data && jsonData.data._id) {",
+                      "  pm.collectionVariables.set('wishlistId', jsonData.data._id);",
+                      "}"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "authorization", "value": "{{userToken}}" },
+                  { "key": "usertype", "value": "User" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"hotelId\": \"{{hotelId}}\"\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/user/addToWishlist",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["user", "addToWishlist"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Add To Wishlist (with Room)",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "authorization", "value": "{{userToken}}" },
+                  { "key": "usertype", "value": "User" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"hotelId\": \"{{hotelId}}\",\n  \"roomId\": \"{{roomId}}\"\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/user/addToWishlist",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["user", "addToWishlist"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get My Wishlist",
+              "request": {
+                "method": "GET",
+                "header": [
+                  { "key": "authorization", "value": "{{userToken}}" },
+                  { "key": "usertype", "value": "User" }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/user/getMyWishlist?page=1&limit=10",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["user", "getMyWishlist"],
+                  "query": [
+                    { "key": "page", "value": "1" },
+                    { "key": "limit", "value": "10" }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Remove From Wishlist",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "authorization", "value": "{{userToken}}" },
+                  { "key": "usertype", "value": "User" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"wishlistId\": \"{{wishlistId}}\"\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/user/removeFromWishlist",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["user", "removeFromWishlist"]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "🛒 Room Selection",
+          "item": [
+            {
+              "name": "Select Room",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "var jsonData = pm.response.json();",
+                      "if(jsonData.data && jsonData.data._id) {",
+                      "  pm.collectionVariables.set('selectionId', jsonData.data._id);",
+                      "}"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "authorization", "value": "{{userToken}}" },
+                  { "key": "usertype", "value": "User" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"roomId\": \"{{roomId}}\",\n  \"checkInDate\": \"2026-09-15\",\n  \"checkOutDate\": \"2026-09-18\",\n  \"adults\": 2,\n  \"children\": 1\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/user/selectRoom",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["user", "selectRoom"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get My Selected Rooms",
+              "request": {
+                "method": "GET",
+                "header": [
+                  { "key": "authorization", "value": "{{userToken}}" },
+                  { "key": "usertype", "value": "User" }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/user/getMySelectedRooms",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["user", "getMySelectedRooms"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Remove Selected Room",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "authorization", "value": "{{userToken}}" },
+                  { "key": "usertype", "value": "User" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"selectionId\": \"{{selectionId}}\"\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/user/removeSelectedRoom",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["user", "removeSelectedRoom"]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "🎁 Offers",
+          "item": [
+            {
+              "name": "Get Active Offers",
+              "request": {
+                "method": "GET",
+                "header": [
+                  { "key": "authorization", "value": "{{userToken}}" },
+                  { "key": "usertype", "value": "User" }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/user/getActiveOffers?page=1&limit=10",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["user", "getActiveOffers"],
+                  "query": [
+                    { "key": "page", "value": "1" },
+                    { "key": "limit", "value": "10" }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "📅 Bookings",
+          "item": [
+            {
+              "name": "Book Room",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "var jsonData = pm.response.json();",
+                      "if(jsonData.data && jsonData.data._id) {",
+                      "  pm.collectionVariables.set('bookingId', jsonData.data._id);",
+                      "}"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "authorization", "value": "{{userToken}}" },
+                  { "key": "usertype", "value": "User" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"roomId\": \"{{roomId}}\",\n  \"checkInDate\": \"2026-10-01\",\n  \"checkOutDate\": \"2026-10-05\",\n  \"adults\": 2,\n  \"children\": 0,\n  \"specialRequests\": \"Late check-in around 10 PM, extra pillows please\"\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/user/bookRoom",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["user", "bookRoom"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Cancel Booking",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "authorization", "value": "{{userToken}}" },
+                  { "key": "usertype", "value": "User" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"bookingId\": \"{{bookingId}}\"\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/user/cancelBooking",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["user", "cancelBooking"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Booking By Id",
+              "request": {
+                "method": "GET",
+                "header": [
+                  { "key": "authorization", "value": "{{userToken}}" },
+                  { "key": "usertype", "value": "User" }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/user/getBookingById?bookingId={{bookingId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["user", "getBookingById"],
+                  "query": [
+                    { "key": "bookingId", "value": "{{bookingId}}" }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get My Bookings",
+              "request": {
+                "method": "GET",
+                "header": [
+                  { "key": "authorization", "value": "{{userToken}}" },
+                  { "key": "usertype", "value": "User" }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/user/getMyBookings?page=1&limit=10",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["user", "getMyBookings"],
+                  "query": [
+                    { "key": "page", "value": "1" },
+                    { "key": "limit", "value": "10" },
+                    { "key": "bookingStatus", "value": "booked", "description": "Options: booked | checkedIn | checkedOut | cancelled", "disabled": true }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "💳 Payments",
+          "item": [
+            {
+              "name": "Make Payment",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "authorization", "value": "{{userToken}}" },
+                  { "key": "usertype", "value": "User" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"bookingId\": \"{{bookingId}}\",\n  \"paymentMethod\": \"card\"\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/user/makePayment",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["user", "makePayment"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get My Payments",
+              "request": {
+                "method": "GET",
+                "header": [
+                  { "key": "authorization", "value": "{{userToken}}" },
+                  { "key": "usertype", "value": "User" }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/user/getMyPayments?page=1&limit=10",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["user", "getMyPayments"],
+                  "query": [
+                    { "key": "page", "value": "1" },
+                    { "key": "limit", "value": "10" },
+                    { "key": "paymentStatus", "value": "paid", "description": "Options: paid | refunded", "disabled": true }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "⭐ Reviews",
+          "item": [
+            {
+              "name": "Add Review",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "var jsonData = pm.response.json();",
+                      "if(jsonData.data && jsonData.data._id) {",
+                      "  pm.collectionVariables.set('reviewId', jsonData.data._id);",
+                      "}"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "authorization", "value": "{{userToken}}" },
+                  { "key": "usertype", "value": "User" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"hotelId\": \"{{hotelId}}\",\n  \"rating\": 5,\n  \"reviewText\": \"Absolutely stunning property! The staff was incredibly welcoming, rooms were spotless, and the ocean view from the balcony was breathtaking. Will definitely return!\"\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/user/addReview",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["user", "addReview"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Update Review",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "authorization", "value": "{{userToken}}" },
+                  { "key": "usertype", "value": "User" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"reviewId\": \"{{reviewId}}\",\n  \"rating\": 4,\n  \"reviewText\": \"Updated review: Great stay overall, minor issue with room service timing but everything else was perfect.\"\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/user/updateReview",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["user", "updateReview"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Review",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "authorization", "value": "{{userToken}}" },
+                  { "key": "usertype", "value": "User" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"reviewId\": \"{{reviewId}}\"\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/user/deleteReview",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["user", "deleteReview"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Hotel Reviews",
+              "request": {
+                "method": "GET",
+                "header": [
+                  { "key": "authorization", "value": "{{userToken}}" },
+                  { "key": "usertype", "value": "User" }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/user/getHotelReviews?hotelId={{hotelId}}&page=1&limit=10",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["user", "getHotelReviews"],
+                  "query": [
+                    { "key": "hotelId", "value": "{{hotelId}}" },
+                    { "key": "page", "value": "1" },
+                    { "key": "limit", "value": "10" }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

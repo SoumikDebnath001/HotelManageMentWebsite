@@ -1,0 +1,7 @@
+8/6/2026, 1:06:52 PM
+Pages component will contain those components which will have separate routes
+===================================================
+8/5/2026, 1:28:58 PM
+npm install @reduxjs/toolkit
+npm install react-redux
+===================================================

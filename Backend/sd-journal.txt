@@ -1,0 +1,36 @@
+8/5/2026, 12:16:48 PM
+Sanitization
+===================================================
+8/4/2026, 11:28:21 AM
+country state update validation{
+    "status": false,
+    "error": {
+        "countryId": {
+            "message": "The country id field is mandatory.",
+            "rule": "requiredIf"
+        },
+        "stateName": {
+            "message": "The state name field is mandatory.",
+            "rule": "requiredIf"
+        },
+        "cityName": {
+            "message": "The city name field is mandatory.",
+            "rule": "requiredIf"
+        }
+    },
+    "message": "Validation failed"
+===================================================
+7/14/2026, 1:16:55 PM
+search hotel id , room id , regex  
+room selection user id , room id , hotel id , is active , is final
+wish list  hotel id  , user id , room id ,is active 
+roomBooking room id , hotel id ,user id ,checkin , check out ,
+===================================================
+7/9/2026, 2:06:57 PM
+1. hotel code  auto generated during apporval by admin 
+
+2.country start id 
+3.longitude latidtude
+4.hotel type under construction , semi constructed , completed 
+5.CRUD rooms by manager 
+4.user will have all hotel api , get single hotel by id , get room by hotel id , get singel room by room id

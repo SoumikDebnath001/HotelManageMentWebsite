@@ -1,0 +1,42 @@
+var express = require('express');
+var router = express.Router();
+const multer = require('multer');
+var storage = multer.memoryStorage()
+var upload = multer({ storage: storage });
+
+////////////////////////////////////////////////////////////////////////////////////=== imports
+const hotelController = require('../../controllers/employee/hotelController/hotelController');
+const roomController = require('../../controllers/employee/hotelController/roomController');
+const bookingController = require('../../controllers/employee/hotelController/bookingController');
+const paymentController = require('../../controllers/shared/HotelControllers/paymentController');
+const offerController = require('../../controllers/employee/hotelController/offerController');
+
+const { requireManager } = require('../../service/middleware');
+
+router.use(requireManager);
+
+//=============== Hotel Routes
+router.post('/registerHotel', hotelController.registerHotel);
+router.get('/getMyHotels', hotelController.getMyHotels);
+
+//=============== Rooms Routes
+router.post('/createHotelRoom', roomController.createHotelRoom);
+router.get('/getHotelRooms', roomController.getHotelRooms);
+router.post('/updateHotelRoom', roomController.updateHotelRoom);
+router.post('/deleteHotelRooms', roomController.deleteHotelRooms);
+
+//=============== Bookings Routes
+router.get('/getHotelBookings', bookingController.getHotelBookings);
+router.post('/checkInBooking', bookingController.checkInBooking);
+router.post('/checkOutBooking', bookingController.checkOutBooking);
+
+//=============== Payment Routes
+router.post('/refundPayment', paymentController.refundPayment);
+
+//=============== Offers Routes
+router.post('/createOffer', offerController.createOffer);
+router.get('/getMyOffers', offerController.getMyOffers);
+router.post('/updateOffer', offerController.updateOffer);
+router.post('/deleteOffer', offerController.deleteOffer);
+
+module.exports = router;
