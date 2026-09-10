@@ -35,6 +35,7 @@ const getDashboardRoute = (userType) => {
 const NAV_LINKS = [
   { label: "Home", path: "/" },
   { label: "Services", path: "/services" },
+  { label: "Home Stays", path: "/homestays" },
   { label: "About", path: "/about" },
 ];
 

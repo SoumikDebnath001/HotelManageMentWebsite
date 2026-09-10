@@ -10,6 +10,7 @@ const roomController = require('../../controllers/employee/hotelController/roomC
 const bookingController = require('../../controllers/employee/hotelController/bookingController');
 const paymentController = require('../../controllers/shared/HotelControllers/paymentController');
 const offerController = require('../../controllers/employee/hotelController/offerController');
+const ImageUpload = require('../../controllers/shared/Uploads/imageUpload');
 
 const { requireManager } = require('../../service/middleware');
 
@@ -38,5 +39,12 @@ router.post('/createOffer', offerController.createOffer);
 router.get('/getMyOffers', offerController.getMyOffers);
 router.post('/updateOffer', offerController.updateOffer);
 router.post('/deleteOffer', offerController.deleteOffer);
+
+//=============== Upload Routes
+router.post('/image/upload', upload.single('image'), ImageUpload.ImageUpload);
+router.post('/uploadmultipleimages', upload.array('images', 10), ImageUpload.MultipleImageUpload);
+router.post('/upload/profile-image', upload.single('image'), ImageUpload.profileImageUpload);
+router.post('/upload/hotel-image', upload.single('image'), ImageUpload.hotelImageUpload);
+router.post('/upload/hotel-video', upload.single('video'), ImageUpload.hotelVideoUpload);
 
 module.exports = router;

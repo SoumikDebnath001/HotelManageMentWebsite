@@ -16,6 +16,7 @@ const offerController = require('../../controllers/user/hotelController/offerCon
 const reviewController = require('../../controllers/user/ratingReviewLiked/reviewController');
 const amenityController = require('../../controllers/shared/HotelControllers/amenityController');
 const roomTypeController = require('../../controllers/shared/HotelControllers/roomTypeController');
+const ImageUpload = require('../../controllers/shared/Uploads/imageUpload');
 
 const { requireUser } = require('../../service/middleware');
 
@@ -59,6 +60,7 @@ router.get('/getMyBookings', bookingController.getMyBookings);
 
 //=============== Payment Routes
 router.post('/makePayment', paymentController.makePayment);
+router.post('/createRazorpayOrder', paymentController.createRazorpayOrder);
 router.get('/getMyPayments', paymentController.getMyPayments);
 
 //=============== Reviews Routes
@@ -66,5 +68,12 @@ router.post('/addReview', reviewController.addReview);
 router.post('/updateReview', reviewController.updateReview);
 router.post('/deleteReview', reviewController.deleteReview);
 router.get('/getHotelReviews', reviewController.getHotelReviews);
+
+//=============== Upload Routes
+router.post('/image/upload', upload.single('image'), ImageUpload.ImageUpload);
+router.post('/uploadmultipleimages', upload.array('images', 10), ImageUpload.MultipleImageUpload);
+router.post('/upload/profile-image', upload.single('image'), ImageUpload.profileImageUpload);
+router.post('/upload/hotel-image', upload.single('image'), ImageUpload.hotelImageUpload);
+router.post('/upload/hotel-video', upload.single('video'), ImageUpload.hotelVideoUpload);
 
 module.exports = router;

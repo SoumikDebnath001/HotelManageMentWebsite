@@ -34,7 +34,7 @@ const PaymentSchema = new Schema({
     },
     paymentMethod: {
         type: String,
-        enum: ['card', 'upi', 'netbanking', 'wallet', 'cash'],
+        enum: ['card', 'upi', 'netbanking', 'wallet', 'cash', 'Razorpay'],
         required: true
     },
     transactionId: {

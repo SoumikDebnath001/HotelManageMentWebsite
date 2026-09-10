@@ -15,6 +15,8 @@ import ThreeGirdDisplay from "../Components/UI/HomePageUI/ThreeGirdDisplay";
 import TestimonialUi from "../Components/UI/HomePageUI/TestimonialUi";
 import Enjoy from "../assets/Homepage/Enjoy.svg";
 
+import ParallaxBg from "../assets/about-lounge.png";
+
 /* =========================================================
    STATS DATA
 ========================================================= */
@@ -137,11 +139,23 @@ const HomePage = () => {
   return (
     <div
       className="
+        relative
         min-h-screen
-        bg-[#0c0a09]
+        bg-transparent
         text-white
       "
     >
+      {/* =================================================
+          GLOBAL PARALLAX BACKGROUND
+      ================================================= */}
+      <div className="fixed inset-0 z-[-1] h-screen w-screen overflow-hidden bg-[#0c0a09]">
+        <img
+          src={ParallaxBg}
+          alt="Lounge Background"
+          className="absolute inset-0 h-full w-full object-cover opacity-30"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/40 to-black/80" />
+      </div>
       <main>
 
         {/* =================================================
@@ -158,10 +172,10 @@ const HomePage = () => {
           className="
             relative
             z-10
-            -mt-20
             px-4
             sm:px-8
             lg:px-16
+            pt-20
           "
         >
 

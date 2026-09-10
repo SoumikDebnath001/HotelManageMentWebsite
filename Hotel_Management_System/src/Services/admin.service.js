@@ -43,4 +43,12 @@ export const changePasswordWithOtp = async (data) => {
   return handleApiRequest(() => axiosInstance("Admin").post("admin/changePassword", data));
 };
 
-
+export const uploadHotelImage = async (file) => {
+  const formData = new FormData();
+  formData.append("image", file);
+  return handleApiRequest(() =>
+    axiosInstance("Admin").post("admin/upload/hotel-image", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    })
+  );
+};

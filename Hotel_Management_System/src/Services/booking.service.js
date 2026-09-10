@@ -25,3 +25,15 @@ export const getRoomBookedDates = async (roomId) => {
 export const bookRoom = async (data) => {
   return handleApiRequest(() => axiosInstance("User").post("/user/bookRoom", data));
 };
+
+export const createRazorpayOrder = async (data) => {
+  return handleApiRequest(() => axiosInstance("User").post("/user/createRazorpayOrder", data));
+};
+
+export const makePayment = async (data) => {
+  return handleApiRequest(() => axiosInstance("User").post("/user/makePayment", data));
+};
+
+export const cancelBooking = async (data) => {
+  return handleApiRequest(() => axiosInstance("User").post("/user/cancelBooking", data));
+};

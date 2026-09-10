@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { FiCalendar, FiMapPin, FiCreditCard, FiClock } from "react-icons/fi";
 import GlassCard from "../../../Features/Auth/Components/GlassCard";
 import { fetchUserBookings } from "../../../Services/dashboard.service";
+import { cancelBooking } from "../../../Services/booking.service";
 import BookingCalendarModal from "./BookingCalendarModal";
 import toast from "react-hot-toast";
 
@@ -10,6 +11,7 @@ const UserBookings = () => {
   const [loading, setLoading] = useState(true);
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+  const [cancellingId, setCancellingId] = useState(null);
 
   useEffect(() => {
     loadBookings();
@@ -31,6 +33,24 @@ const UserBookings = () => {
   const openCalendarPreview = (booking) => {
     setSelectedBooking(booking);
     setIsCalendarOpen(true);
+  };
+
+  const handleCancelBooking = async (bookingId) => {
+    if (!window.confirm("Are you sure you want to cancel this reservation?")) return;
+    
+    setCancellingId(bookingId);
+    try {
+      const res = await cancelBooking({ bookingId });
+      if (res?.data?.status) {
+        toast.success(res.data.message || "Reservation cancelled successfully");
+        loadBookings(); // Reload to update lists
+      } else {
+        toast.error(res?.data?.message || "Failed to cancel reservation");
+      }
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "Error cancelling reservation");
+    }
+    setCancellingId(null);
   };
 
   // Separate into Current (upcoming/active) and History (past/cancelled)
@@ -90,7 +110,16 @@ const UserBookings = () => {
         </div>
       </div>
 
-      <div className="mt-5 pt-4 border-t border-white/10 flex justify-end">
+      <div className="mt-5 pt-4 border-t border-white/10 flex justify-end gap-3">
+        {!isHistory && booking.bookingStatus !== 'checkedIn' && (
+          <button
+            onClick={() => handleCancelBooking(booking._id)}
+            disabled={cancellingId === booking._id}
+            className="flex items-center gap-2 rounded-lg border border-red-500/20 px-4 py-2 text-xs font-semibold text-red-400 transition-colors hover:bg-red-500/10 disabled:opacity-50"
+          >
+            {cancellingId === booking._id ? "Cancelling..." : "Cancel Booking"}
+          </button>
+        )}
         <button
           onClick={() => openCalendarPreview(booking)}
           className="flex items-center gap-2 rounded-lg bg-white/10 px-4 py-2 text-xs font-semibold text-white transition-colors hover:bg-white/20"

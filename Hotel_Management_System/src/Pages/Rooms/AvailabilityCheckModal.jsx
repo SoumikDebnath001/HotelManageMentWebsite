@@ -58,7 +58,7 @@ const AvailabilityCheckModal = ({ room, hotel, onClose }) => {
       return;
     }
     toast.success("Proceeding to booking...");
-    // navigate('/checkout', { state: { room, checkIn, checkOut } })
+    navigate('/user/checkout', { state: { room, hotel, checkIn, checkOut, adults: 1 } })
   };
 
   // Calendar rendering logic

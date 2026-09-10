@@ -3,6 +3,7 @@ const Hotel = require("../../../Models/hotel");
 const HotelRoomBooking = require("../../../Models/hotelBookingModel");
 const Payment = require("../../../Models/paymentModel");
 const { Validator } = require("node-input-validator");
+const Razorpay = require("razorpay");
 
 // Generate Transaction Id e.g. TXN-1720000000000-4821
 const generateTransactionId = () => {
@@ -267,9 +268,100 @@ const refundPayment = async (req, res) => {
   }
 };
 
+const Rooms = require("../../../Models/roomsMoodel");
+// Create Razorpay Order
+const createRazorpayOrder = async (req, res) => {
+  const v = new Validator(req.body, {
+    roomId: "required",
+    checkInDate: "required|date",
+    checkOutDate: "required|date",
+  });
+
+  let matched = await v.check();
+  if (!matched) {
+    return res.status(400).json({ status: false, error: v.errors, message: "Validation failed" });
+  }
+
+  try {
+    const checkInDate = new Date(req.body.checkInDate);
+    const checkOutDate = new Date(req.body.checkOutDate);
+    
+    if (checkOutDate <= checkInDate) {
+      return res.status(400).json({ status: false, message: "Check-out date must be after check-in date" });
+    }
+
+    const rooms = await Rooms.aggregate([
+      {
+        $match: {
+          _id: new mongoose.Types.ObjectId(String(req.body.roomId)),
+          isActive: true,
+          isDeleted: false,
+        },
+      },
+    ]);
+
+    if (rooms.length == 0) {
+      return res.status(404).json({ status: false, message: "Room not found" });
+    }
+
+    const room = rooms[0];
+    const numberOfNights = Math.ceil((checkOutDate - checkInDate) / (1000 * 60 * 60 * 24));
+    let totalAmount = numberOfNights * room.pricePerNight;
+    
+    // Check overlapping bookings to ensure availability
+    const overlappingBookings = await HotelRoomBooking.aggregate([
+      {
+        $match: {
+          roomId: new mongoose.Types.ObjectId(String(req.body.roomId)),
+          bookingStatus: { $in: ["booked", "checkedIn"] },
+          checkInDate: { $lt: checkOutDate },
+          checkOutDate: { $gt: checkInDate },
+          isDeleted: false,
+        },
+      },
+    ]);
+
+    if (overlappingBookings.length > 0) {
+      return res.status(400).json({ status: false, message: "Room is not available for the selected dates" });
+    }
+
+    if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
+      return res.status(500).json({ status: false, message: "Razorpay credentials not configured in environment variables" });
+    }
+
+    const razorpay = new Razorpay({
+      key_id: process.env.RAZORPAY_KEY_ID,
+      key_secret: process.env.RAZORPAY_KEY_SECRET,
+    });
+
+    const options = {
+      amount: Math.round(totalAmount * 100), // amount in smallest currency unit
+      currency: "INR", 
+      receipt: `tmp_${Date.now()}`,
+    };
+
+    const order = await razorpay.orders.create(options);
+
+    return res.status(200).json({
+      status: true,
+      message: "Razorpay order created successfully",
+      data: {
+        orderId: order.id,
+        amount: options.amount,
+        currency: options.currency,
+        keyId: process.env.RAZORPAY_KEY_ID
+      },
+    });
+
+  } catch (error) {
+    console.error("Error creating Razorpay order:", error);
+    return res.status(500).json({ status: false, message: "Server error", error: error.message });
+  }
+};
+
 module.exports = {
   makePayment,
   getMyPayments,
   refundPayment,
-
+  createRazorpayOrder
 };

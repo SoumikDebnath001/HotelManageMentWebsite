@@ -4,7 +4,9 @@ const Rooms = require("../../../Models/roomsMoodel");
 const HotelRoomBooking = require("../../../Models/hotelBookingModel");
 const RoomSelection = require("../../../Models/roomSelectionModel");
 const Offer = require("../../../Models/offerModel");
+const Payment = require("../../../Models/paymentModel");
 const { Validator } = require("node-input-validator");
+const crypto = require("crypto");
 
 // Apply Offer on booking amount - returns { offer, discountAmount } or { error }
 const applyOffer = async (offerCode, hotelId, totalAmount) => {
@@ -58,6 +60,9 @@ const bookRoom = async (req, res) => {
     checkOutDate: "required|date",
     adults: "required|integer",
     children: "integer",
+    razorpay_payment_id: "required",
+    razorpay_order_id: "required",
+    razorpay_signature: "required",
   });
 
   let matched = await v.check();
@@ -75,6 +80,23 @@ const bookRoom = async (req, res) => {
         status: false,
         message: "Only user can book a room",
       });
+    }
+
+    const generatedSignature = crypto
+      .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
+      .update(req.body.razorpay_order_id + "|" + req.body.razorpay_payment_id)
+      .digest("hex");
+
+    console.log("PAYMENT DEBUG:", {
+      secret: process.env.RAZORPAY_KEY_SECRET ? "Present" : "Missing",
+      expected: req.body.razorpay_signature,
+      generated: generatedSignature,
+      order_id: req.body.razorpay_order_id,
+      payment_id: req.body.razorpay_payment_id
+    });
+
+    if (generatedSignature !== req.body.razorpay_signature) {
+      return res.status(400).json({ status: false, message: "Payment verification failed. Invalid signature." });
     }
 
     const checkInDate = new Date(req.body.checkInDate);
@@ -211,7 +233,7 @@ const bookRoom = async (req, res) => {
       offerCode: offerCode,
       discountAmount: discountAmount,
       payableAmount: totalAmount - discountAmount,
-      paymentStatus: "pending",
+      paymentStatus: "paid",
       bookingStatus: "booked",
       bookedOn: new Date(),
       customFields: req.body.customFields ? req.body.customFields : [],
@@ -219,6 +241,24 @@ const bookRoom = async (req, res) => {
 
     const bookingInsert = new HotelRoomBooking(bookingData);
     await bookingInsert.save();
+
+    let paymentData = {
+      bookingId: bookingInsert._id,
+      userId: req.user._id,
+      userName: bookingInsert.userName,
+      hotelId: bookingInsert.hotelId,
+      hotelName: bookingInsert.hotelName,
+      roomId: bookingInsert.roomId,
+      roomNumber: bookingInsert.roomNumber,
+      amount: bookingInsert.payableAmount ? bookingInsert.payableAmount : bookingInsert.totalAmount,
+      paymentMethod: "Razorpay",
+      transactionId: req.body.razorpay_payment_id,
+      paymentStatus: "paid",
+      paidOn: new Date(),
+    };
+
+    const paymentInsert = new Payment(paymentData);
+    await paymentInsert.save();
 
     // Mark room selection as final if the user had selected this room
     await RoomSelection.updateMany(

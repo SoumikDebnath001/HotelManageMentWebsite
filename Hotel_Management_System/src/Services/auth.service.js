@@ -49,6 +49,13 @@ export const getUserProfile = async () => {
 export const updateUserProfile = async (data) => {
   return handleApiRequest(() => axiosInstance("User").post(`user/updateMyProfile`, data));
 };
+export const uploadUserProfileImage = async (file) => {
+  const formData = new FormData();
+  formData.append("image", file);
+  return handleApiRequest(() => axiosInstance("User").post(`user/upload/profile-image`, formData, {
+    headers: { "Content-Type": "multipart/form-data" }
+  }));
+};
 
 //========================================================================================= Employee / Manager API Calls
 export const registerEmployee = async (data) => {

@@ -1,7 +1,253 @@
 import React, { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { FiStar, FiMapPin, FiPercent, FiChevronLeft, FiChevronRight, FiArrowUpRight } from "react-icons/fi";
 import HeroSlide1 from "../../../assets/Homepage/HeroSlide1.png";
 import HeroSlide2 from "../../../assets/Homepage/HeroSlide2.png";
 import HeroSlide3 from "../../../assets/Homepage/HeroSlide3.png";
+
+/* =========================================================
+   TOP 10 HOME STAYS — DUMMY DATA
+========================================================= */
+
+const topStays = [
+  {
+    id: 1,
+    name: "Sunset Villa Bali",
+    location: "Ubud, Bali",
+    rating: 4.9,
+    price: "$280",
+    image: "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80",
+    description: "A breathtaking villa nestled in the heart of Ubud's rice terraces. Features an infinity pool overlooking the lush valley, traditional Balinese architecture with modern amenities, and private garden pavilions perfect for romantic getaways.",
+    amenities: ["Free Wi-Fi", "Pool", "Spa", "Breakfast", "Ocean View"],
+  },
+  {
+    id: 2,
+    name: "Mountain Retreat Lodge",
+    location: "Shimla, India",
+    rating: 4.8,
+    price: "$150",
+    image: "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=600&q=80",
+    description: "Escape to the misty mountains of Shimla in this charming colonial-style lodge. Surrounded by deodar forests, enjoy crackling fireplaces, locally sourced cuisine, and panoramic views of the Himalayan foothills.",
+    amenities: ["Free Wi-Fi", "Breakfast", "Room Service", "Parking"],
+  },
+  {
+    id: 3,
+    name: "Beachfront Cabana",
+    location: "Maldives",
+    rating: 5.0,
+    price: "$450",
+    image: "https://images.unsplash.com/photo-1573843981267-be1999ff37cd?auto=format&fit=crop&w=600&q=80",
+    description: "Wake up to turquoise waters lapping beneath your overwater cabana. This Maldivian paradise offers glass-floor panels, direct ocean access, a private sundeck, and world-class snorkeling right from your doorstep.",
+    amenities: ["Pool", "Spa", "Ocean View", "Breakfast", "Free Wi-Fi"],
+  },
+  {
+    id: 4,
+    name: "Tuscan Farmhouse",
+    location: "Florence, Italy",
+    rating: 4.7,
+    price: "$320",
+    image: "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=600&q=80",
+    description: "A lovingly restored 18th-century farmhouse surrounded by olive groves and vineyards in the Tuscan countryside. Enjoy authentic Italian cooking classes, wine tastings, and lazy afternoons by the stone-edged pool.",
+    amenities: ["Pool", "Breakfast", "Parking", "Free Wi-Fi"],
+  },
+  {
+    id: 5,
+    name: "Lakeside Chalet",
+    location: "Interlaken, Switzerland",
+    rating: 4.9,
+    price: "$380",
+    image: "https://images.unsplash.com/photo-1564501049412-61c2a3083791?auto=format&fit=crop&w=600&q=80",
+    description: "Perched on the shores of Lake Brienz, this Alpine chalet offers floor-to-ceiling windows framing the Jungfrau massif. Cozy interiors with handcrafted wood furnishings and a private hot tub on the terrace.",
+    amenities: ["Free Wi-Fi", "Spa", "Room Service", "Breakfast"],
+  },
+  {
+    id: 6,
+    name: "Desert Oasis Riad",
+    location: "Marrakech, Morocco",
+    rating: 4.6,
+    price: "$190",
+    image: "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=600&q=80",
+    description: "Step through ornate wooden doors into a serene courtyard riad with a central mosaic fountain. Traditional zellige tilework, rooftop terraces with Atlas Mountain views, and authentic Moroccan hammam experience.",
+    amenities: ["Spa", "Breakfast", "Free Wi-Fi", "Room Service"],
+  },
+  {
+    id: 7,
+    name: "Tropical Treehouse",
+    location: "Costa Rica",
+    rating: 4.8,
+    price: "$210",
+    image: "https://images.unsplash.com/photo-1549294413-26f195200c16?auto=format&fit=crop&w=600&q=80",
+    description: "An elevated retreat hidden in the Costa Rican canopy. This eco-luxury treehouse features open-air showers, wildlife spotting from your private deck, and a suspension bridge connecting you to the rainforest spa.",
+    amenities: ["Free Wi-Fi", "Spa", "Breakfast", "Pool"],
+  },
+  {
+    id: 8,
+    name: "Fjord Glass Cabin",
+    location: "Tromsø, Norway",
+    rating: 4.9,
+    price: "$340",
+    image: "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&w=600&q=80",
+    description: "A stunning glass-walled cabin on the edge of a Norwegian fjord. Watch the Northern Lights from your bed, enjoy midnight sun hikes, and relax in the wood-fired sauna with icy fjord plunges.",
+    amenities: ["Free Wi-Fi", "Ocean View", "Breakfast", "Spa"],
+  },
+  {
+    id: 9,
+    name: "Heritage Haveli",
+    location: "Jaipur, India",
+    rating: 4.7,
+    price: "$130",
+    image: "https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=600&q=80",
+    description: "A magnificently restored Rajasthani haveli in the Pink City. Intricate jali screens, courtyard dining under the stars, rooftop pool overlooking Nahargarh Fort, and curated heritage walking tours.",
+    amenities: ["Pool", "Breakfast", "Free Wi-Fi", "Room Service", "Parking"],
+  },
+  {
+    id: 10,
+    name: "Cliffside Sanctuary",
+    location: "Santorini, Greece",
+    rating: 5.0,
+    price: "$420",
+    image: "https://images.unsplash.com/photo-1566665797739-1674de7a421a?auto=format&fit=crop&w=600&q=80",
+    description: "Cave-carved luxury suites in Oia with iconic blue-dome views. Private plunge pool, caldera sunset terraces, and a wine cellar carved into volcanic rock. The quintessential Greek island experience.",
+    amenities: ["Pool", "Ocean View", "Breakfast", "Free Wi-Fi", "Spa"],
+  },
+];
+
+/* =========================================================
+   TOP 10 OFFERS — DUMMY DATA
+========================================================= */
+
+const topOffers = [
+  {
+    id: 1,
+    title: "Monsoon Escape Package",
+    location: "Munnar, India",
+    rating: 4.8,
+    price: "$89",
+    originalPrice: "$160",
+    discount: "45%",
+    image: "https://images.unsplash.com/photo-1540202404-a2f29016b523?auto=format&fit=crop&w=600&q=80",
+    description: "Experience the magic of monsoon in Kerala's tea country. This exclusive package includes guided plantation walks, Ayurvedic spa sessions, traditional Kerala cuisine, and complimentary airport transfers.",
+    amenities: ["Spa", "Breakfast", "Free Wi-Fi", "Room Service"],
+    validUntil: "September 30, 2026",
+  },
+  {
+    id: 2,
+    title: "Early Bird Summer Deal",
+    location: "Phuket, Thailand",
+    rating: 4.7,
+    price: "$199",
+    originalPrice: "$350",
+    discount: "40%",
+    image: "https://images.unsplash.com/photo-1540541338287-41700207dee6?auto=format&fit=crop&w=600&q=80",
+    description: "Book early for the ultimate Phuket summer. Includes oceanfront suite, daily breakfast buffet, two complimentary Thai massages, and a sunset catamaran cruise around Phang Nga Bay.",
+    amenities: ["Pool", "Ocean View", "Spa", "Breakfast", "Free Wi-Fi"],
+    validUntil: "June 15, 2026",
+  },
+  {
+    id: 3,
+    title: "Honeymoon Special",
+    location: "Bora Bora, French Polynesia",
+    rating: 5.0,
+    price: "$550",
+    originalPrice: "$900",
+    discount: "38%",
+    image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80",
+    description: "Celebrate love in the world's most romantic destination. Overwater bungalow with glass floor, couples spa ritual, candlelit beach dinner, and a private lagoon excursion included.",
+    amenities: ["Ocean View", "Spa", "Breakfast", "Room Service", "Pool"],
+    validUntil: "December 31, 2026",
+  },
+  {
+    id: 4,
+    title: "Weekend City Getaway",
+    location: "Dubai, UAE",
+    rating: 4.6,
+    price: "$250",
+    originalPrice: "$420",
+    discount: "35%",
+    image: "https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?auto=format&fit=crop&w=600&q=80",
+    description: "Two nights in a luxury downtown hotel with Burj Khalifa views. Includes rooftop dining credit, desert safari adventure, and complimentary access to the infinity pool and sky lounge.",
+    amenities: ["Pool", "Gym", "Breakfast", "Free Wi-Fi", "Room Service"],
+    validUntil: "October 15, 2026",
+  },
+  {
+    id: 5,
+    title: "Winter Wonderland",
+    location: "Zermatt, Switzerland",
+    rating: 4.9,
+    price: "$320",
+    originalPrice: "$500",
+    discount: "36%",
+    image: "https://images.unsplash.com/photo-1584132967334-10e028bd69f7?auto=format&fit=crop&w=600&q=80",
+    description: "Ski-in ski-out chalet with Matterhorn views. Includes ski pass, equipment rental, fondue dinner experience, and après-ski spa access with outdoor hot spring pools.",
+    amenities: ["Spa", "Breakfast", "Free Wi-Fi", "Parking"],
+    validUntil: "March 31, 2027",
+  },
+  {
+    id: 6,
+    title: "Wellness Detox Retreat",
+    location: "Rishikesh, India",
+    rating: 4.8,
+    price: "$120",
+    originalPrice: "$220",
+    discount: "45%",
+    image: "https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=600&q=80",
+    description: "A transformative 3-night wellness program by the Ganges. Daily yoga and meditation, Ayurvedic consultation, detox meals, sound healing sessions, and river rafting adventure included.",
+    amenities: ["Spa", "Breakfast", "Free Wi-Fi", "Gym"],
+    validUntil: "November 30, 2026",
+  },
+  {
+    id: 7,
+    title: "Family Fun Package",
+    location: "Orlando, USA",
+    rating: 4.5,
+    price: "$180",
+    originalPrice: "$300",
+    discount: "40%",
+    image: "https://images.unsplash.com/photo-1598928506311-c55ded91a20c?auto=format&fit=crop&w=600&q=80",
+    description: "Family suite with kids' play zone, complimentary theme park shuttle, daily breakfast for 4, evening poolside BBQ, and a surprise welcome gift bag for little ones.",
+    amenities: ["Pool", "Breakfast", "Free Wi-Fi", "Parking", "Gym"],
+    validUntil: "August 31, 2026",
+  },
+  {
+    id: 8,
+    title: "Safari & Stay",
+    location: "Maasai Mara, Kenya",
+    rating: 4.9,
+    price: "$400",
+    originalPrice: "$650",
+    discount: "38%",
+    image: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=600&q=80",
+    description: "Luxury tented camp in the heart of the savanna. Two game drives daily, bush breakfast, sundowner cocktails, Maasai cultural visit, and a hot air balloon safari over the Great Migration.",
+    amenities: ["Breakfast", "Room Service", "Free Wi-Fi"],
+    validUntil: "January 15, 2027",
+  },
+  {
+    id: 9,
+    title: "Art & Culture Break",
+    location: "Paris, France",
+    rating: 4.7,
+    price: "$270",
+    originalPrice: "$430",
+    discount: "37%",
+    image: "https://images.unsplash.com/photo-1594563703937-fdc640497dcd?auto=format&fit=crop&w=600&q=80",
+    description: "Boutique hotel in Le Marais with Louvre skip-the-line passes, private Seine dinner cruise, macaron-making workshop, and a curated art gallery walking tour with a local expert.",
+    amenities: ["Breakfast", "Free Wi-Fi", "Room Service"],
+    validUntil: "July 31, 2026",
+  },
+  {
+    id: 10,
+    title: "Island Hopping Deal",
+    location: "Mykonos, Greece",
+    rating: 4.8,
+    price: "$310",
+    originalPrice: "$480",
+    discount: "35%",
+    image: "https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?auto=format&fit=crop&w=600&q=80",
+    description: "Stay at a clifftop villa and explore the Cyclades. Package includes ferry passes to Delos and Naxos, sunset yacht cruise, beach club day pass, and authentic Greek cooking class.",
+    amenities: ["Pool", "Ocean View", "Breakfast", "Free Wi-Fi"],
+    validUntil: "September 15, 2026",
+  },
+];
 
 /* =========================================================
    SLIDE DATA
@@ -26,8 +272,9 @@ const slides = [
   },
 
   {
-    title: "Comfort",
-    eyebrow: "PREMIUM SUITES",
+    title: "",
+    eyebrow: "",
+    contentType: "topStays",
     hero: HeroSlide2,
 
     surrounding: [
@@ -45,6 +292,7 @@ const slides = [
   {
     title: "",
     eyebrow: "",
+    contentType: "topOffers",
     hero: HeroSlide3,
 
     surrounding: [
@@ -80,6 +328,7 @@ const smooth = (value) => {
 ========================================================= */
 
 const HeroSlideBackground = () => {
+  const navigate = useNavigate();
   const sectionRef = useRef(null);
   const centerRef = useRef(null);
 
@@ -1057,27 +1306,27 @@ const HeroSlideBackground = () => {
               direction={getDirection(7)}
             />
           </div>
-        </div>
+          </div>
 
-        {/* =================================================
-            EXPANDING HERO
-        ================================================= */}
+          {/* =================================================
+              EXPANDING HERO
+          ================================================= */}
 
-        <div
-          className="
-            pointer-events-none
-            fixed
-            left-0
-            top-0
-            z-50
-            h-screen
-            w-screen
-            overflow-hidden
-            bg-black
-            will-change-[left,top,width,height]
-          "
-          style={heroStyle}
-        >
+          <div
+            className="
+              pointer-events-none
+              absolute
+              left-0
+              top-0
+              z-50
+              h-screen
+              w-screen
+              overflow-hidden
+              bg-black
+              will-change-[left,top,width,height]
+            "
+            style={heroStyle}
+          >
           <img
             src={heroData.hero}
             alt={heroData.title}
@@ -1106,13 +1355,10 @@ const HeroSlideBackground = () => {
           <div
             className="
               absolute
-              left-1/2
-              top-1/2
-              w-[90%]
-              -translate-x-1/2
-              -translate-y-1/2
-              text-center
-              text-white
+              inset-0
+              flex
+              items-center
+              justify-center
             "
             style={{
               opacity: clamp(
@@ -1120,33 +1366,68 @@ const HeroSlideBackground = () => {
                   0.35) /
                   0.35
               ),
+              pointerEvents: heroExpansion > 0.7 ? "auto" : "none",
             }}
           >
-            <p
-              className="
-                mb-3
-                font-mono
-                text-[11px]
-                font-medium
-                uppercase
-                tracking-[0.25em]
-              "
-            >
-              {heroData.eyebrow}
-            </p>
+            {/* Slide 2: Top 10 Home Stays */}
 
-            <h1
-              className="
-                text-5xl
-                font-semibold
-                leading-[0.9]
-                tracking-[-0.05em]
-                sm:text-7xl
-                lg:text-8xl
-              "
-            >
-              {heroData.title}
-            </h1>
+            {heroData.contentType === "topStays" && (
+              <SpotlightCarousel
+                heading="Top 10 Home Stays of the Year"
+                eyebrow="CURATED PICKS"
+                items={topStays}
+                type="stay"
+                navigate={navigate}
+                exploreLink="/homestays"
+                exploreLabel="Explore All Stays"
+              />
+            )}
+
+            {/* Slide 3: Top 10 Offers */}
+
+            {heroData.contentType === "topOffers" && (
+              <SpotlightCarousel
+                heading="Top 10 Offers"
+                eyebrow="EXCLUSIVE DEALS"
+                items={topOffers}
+                type="offer"
+                navigate={navigate}
+                exploreLink="/rooms?filter=top-offers"
+                exploreLabel="Explore All Offers"
+              />
+            )}
+
+            {/* Default slide: title + eyebrow */}
+
+            {!heroData.contentType && heroData.title && (
+              <div className="w-[90%] text-center text-white">
+                <p
+                  className="
+                    mb-3
+                    font-mono
+                    text-[11px]
+                    font-medium
+                    uppercase
+                    tracking-[0.25em]
+                  "
+                >
+                  {heroData.eyebrow}
+                </p>
+
+                <h1
+                  className="
+                    text-5xl
+                    font-semibold
+                    leading-[0.9]
+                    tracking-[-0.05em]
+                    sm:text-7xl
+                    lg:text-8xl
+                  "
+                >
+                  {heroData.title}
+                </h1>
+              </div>
+            )}
           </div>
 
           {/* COUNTER */}
@@ -1259,6 +1540,637 @@ const GridBlock = ({
             `translateY(${nextY}%)`,
         }}
       />
+    </div>
+  );
+};
+
+/* =========================================================
+   SLIDE CARD CAROUSEL
+========================================================= */
+
+const SlideCardCarousel = ({
+  heading,
+  eyebrow,
+  items,
+  type,
+  navigate,
+  exploreLink,
+  exploreLabel = "Explore More",
+}) => {
+  const scrollRef = useRef(null);
+
+  const scroll = (direction) => {
+    if (!scrollRef.current) return;
+    const cardWidth = 280;
+    const gap = 16;
+    scrollRef.current.scrollBy({
+      left: direction * (cardWidth + gap) * 2,
+      behavior: "smooth",
+    });
+  };
+
+  const isOffer = type === "offer";
+
+  return (
+    <div
+      className="
+        relative
+        flex
+        h-full
+        w-full
+        flex-col
+        justify-center
+        px-6
+        sm:px-10
+        lg:px-16
+      "
+    >
+      {/* HEADING */}
+
+      <div className="mb-6 flex items-end justify-between">
+        <div>
+          <p
+            className="
+              mb-2
+              font-mono
+              text-[10px]
+              font-semibold
+              uppercase
+              tracking-[0.25em]
+              text-amber-400
+            "
+          >
+            {eyebrow}
+          </p>
+
+          <h2
+            className="
+              font-serif
+              text-2xl
+              font-bold
+              tracking-tight
+              text-white
+              sm:text-3xl
+              lg:text-4xl
+            "
+          >
+            {heading}
+          </h2>
+        </div>
+
+        {/* NAV ARROWS */}
+
+        <div className="hidden gap-2 sm:flex">
+          <button
+            type="button"
+            onClick={() => scroll(-1)}
+            className="
+              flex
+              h-10
+              w-10
+              cursor-pointer
+              items-center
+              justify-center
+              rounded-full
+              border
+              border-white/15
+              bg-white/5
+              text-white
+              backdrop-blur-md
+              transition-all
+              duration-200
+              hover:bg-white/15
+            "
+          >
+            <FiChevronLeft className="h-5 w-5" />
+          </button>
+
+          <button
+            type="button"
+            onClick={() => scroll(1)}
+            className="
+              flex
+              h-10
+              w-10
+              cursor-pointer
+              items-center
+              justify-center
+              rounded-full
+              border
+              border-white/15
+              bg-white/5
+              text-white
+              backdrop-blur-md
+              transition-all
+              duration-200
+              hover:bg-white/15
+            "
+          >
+            <FiChevronRight className="h-5 w-5" />
+          </button>
+        </div>
+
+        {/* MOBILE EXPLORE BUTTON */}
+        <div className="flex sm:hidden mt-2">
+          {exploreLink && (
+            <button
+              type="button"
+              onClick={() => navigate(exploreLink)}
+              className="
+                inline-flex
+                items-center
+                gap-2
+                rounded-full
+                border
+                border-amber-500/50
+                bg-amber-500/10
+                px-4
+                py-1.5
+                text-xs
+                font-medium
+                text-amber-400
+                backdrop-blur-md
+                transition-colors
+                hover:bg-amber-500/20
+              "
+            >
+              {exploreLabel}
+              <FiArrowUpRight className="h-3.5 w-3.5" />
+            </button>
+          )}
+        </div>
+        
+        {/* DESKTOP EXPLORE BUTTON (placed before arrows normally, but let's put it here if there's space, or better yet, next to the arrows) */}
+      </div>
+
+      {/* EXPLORE MORE (DESKTOP) */}
+      <div className="hidden sm:flex justify-end mb-4 pr-4">
+          {exploreLink && (
+            <button
+              type="button"
+              onClick={() => navigate(exploreLink)}
+              className="
+                inline-flex
+                items-center
+                gap-2
+                rounded-full
+                border
+                border-amber-500/50
+                bg-amber-500/10
+                px-5
+                py-2
+                text-sm
+                font-medium
+                text-amber-400
+                backdrop-blur-md
+                transition-all
+                hover:-translate-y-0.5
+                hover:bg-amber-500/20
+              "
+            >
+              {exploreLabel}
+              <FiArrowUpRight className="h-4 w-4" />
+            </button>
+          )}
+      </div>
+
+      {/* CARD STRIP */}
+
+      <div
+        ref={scrollRef}
+        className="
+          flex
+          gap-4
+          overflow-x-auto
+          pb-4
+        "
+        style={{
+          scrollbarWidth: "none",
+          msOverflowStyle: "none",
+          WebkitOverflowScrolling: "touch",
+        }}
+      >
+        {items.map((item, i) => (
+          <div
+            key={item.id}
+            onClick={() =>
+              navigate(`/${type}/${item.id}`, {
+                state: item,
+              })
+            }
+            className="
+              group
+              relative
+              w-[260px]
+              shrink-0
+              cursor-pointer
+              overflow-hidden
+              rounded-2xl
+              border
+              border-white/10
+              bg-white/[0.06]
+              backdrop-blur-xl
+              transition-all
+              duration-300
+              hover:-translate-y-1
+              hover:border-white/20
+              hover:bg-white/[0.10]
+              hover:shadow-[0_15px_40px_rgba(0,0,0,0.4)]
+              sm:w-[280px]
+            "
+          >
+            {/* IMAGE */}
+
+            <div className="relative h-36 overflow-hidden">
+              <img
+                src={item.image}
+                alt={item.name || item.title}
+                className="
+                  h-full
+                  w-full
+                  object-cover
+                  transition-transform
+                  duration-500
+                  group-hover:scale-110
+                "
+              />
+
+              <div
+                className="
+                  absolute
+                  inset-0
+                  bg-gradient-to-t
+                  from-black/50
+                  to-transparent
+                "
+              />
+
+              {/* RANK BADGE */}
+
+              <div
+                className="
+                  absolute
+                  left-3
+                  top-3
+                  flex
+                  h-7
+                  w-7
+                  items-center
+                  justify-center
+                  rounded-full
+                  bg-amber-500
+                  text-[11px]
+                  font-bold
+                  text-white
+                  shadow-lg
+                "
+              >
+                {i + 1}
+              </div>
+
+              {/* DISCOUNT BADGE (offers only) */}
+
+              {isOffer && item.discount && (
+                <div
+                  className="
+                    absolute
+                    right-3
+                    top-3
+                    inline-flex
+                    items-center
+                    gap-1
+                    rounded-full
+                    bg-emerald-500/90
+                    px-2.5
+                    py-1
+                    text-[10px]
+                    font-bold
+                    text-white
+                    shadow-md
+                  "
+                >
+                  <FiPercent className="h-2.5 w-2.5" />
+                  {item.discount} OFF
+                </div>
+              )}
+
+              {/* RATING */}
+
+              <div
+                className="
+                  absolute
+                  bottom-3
+                  right-3
+                  inline-flex
+                  items-center
+                  gap-1
+                  rounded-full
+                  bg-black/40
+                  px-2
+                  py-0.5
+                  text-[11px]
+                  font-semibold
+                  text-amber-300
+                  backdrop-blur-sm
+                "
+              >
+                <FiStar className="h-3 w-3" />
+                {item.rating}
+              </div>
+            </div>
+
+            {/* INFO */}
+
+            <div className="p-4">
+              <h3
+                className="
+                  text-sm
+                  font-semibold
+                  leading-snug
+                  text-white
+                  group-hover:text-amber-200
+                "
+              >
+                {item.name || item.title}
+              </h3>
+
+              <p
+                className="
+                  mt-1.5
+                  inline-flex
+                  items-center
+                  gap-1
+                  text-[11px]
+                  text-stone-400
+                "
+              >
+                <FiMapPin className="h-3 w-3 text-amber-500/60" />
+                {item.location}
+              </p>
+
+              <div className="mt-3 flex items-baseline gap-1.5">
+                <span className="text-base font-bold text-white">
+                  {item.price}
+                </span>
+
+                <span className="text-[10px] text-stone-500">
+                  / night
+                </span>
+
+                {isOffer && item.originalPrice && (
+                  <span className="ml-1 text-[10px] text-stone-600 line-through">
+                    {item.originalPrice}
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+/* =========================================================
+   SPOTLIGHT CAROUSEL
+========================================================= */
+
+const SpotlightCarousel = ({
+  heading,
+  eyebrow,
+  items,
+  type,
+  navigate,
+  exploreLink,
+  exploreLabel = "Explore More",
+}) => {
+  const [current, setCurrent] = useState(0);
+  const [paused, setPaused] = useState(false);
+
+  useEffect(() => {
+    if (paused || items.length === 0) return;
+    
+    const timer = setTimeout(() => {
+      setCurrent((prev) => (prev + 1 >= items.length ? 0 : prev + 1));
+    }, 2050); // 850ms transition + 1200ms hold
+
+    return () => clearTimeout(timer);
+  }, [current, paused, items.length]);
+
+  const isOffer = type === "offer";
+  
+  // Base dimensions used for spacing calculation
+  const cardWidth = "clamp(200px, 15vw, 260px)";
+
+  const getPositionStyles = (index) => {
+    let diff = index - current;
+
+    if (diff > items.length / 2) diff -= items.length;
+    if (diff < -items.length / 2) diff += items.length;
+
+    // Default (hidden / out of bounds)
+    let styles = {
+      left: "50%",
+      transform: "translate(-50%, -50%) scale(0.5)",
+      opacity: 0,
+      filter: "brightness(0.5) blur(5px)",
+      zIndex: 0,
+      pointerEvents: "none",
+    };
+
+    if (diff === -2) {
+      styles = {
+        left: `calc(50% - ${cardWidth} * 1.8)`,
+        transform: "translate(-50%, -50%) scale(0.82)",
+        opacity: 0.3,
+        filter: "brightness(0.7) blur(2px)",
+        zIndex: 1,
+      };
+    } else if (diff === -1) {
+      styles = {
+        left: `calc(50% - ${cardWidth} * 0.95)`,
+        transform: "translate(-50%, -50%) scale(0.92) perspective(1000px) rotateY(15deg)",
+        opacity: 0.7,
+        filter: "brightness(0.8)",
+        zIndex: 3,
+        pointerEvents: "auto",
+      };
+    } else if (diff === 0) {
+      styles = {
+        left: "50%",
+        transform: "translate(-50%, -50%) scale(1.15)",
+        opacity: 1,
+        filter: "brightness(1.1)",
+        zIndex: 10,
+        pointerEvents: "auto",
+        boxShadow: "0 25px 60px rgba(0,0,0,0.6), 0 0 40px rgba(245,158,11,0.15)",
+        borderColor: "rgba(245, 158, 11, 0.3)",
+      };
+    } else if (diff === 1) {
+      styles = {
+        left: `calc(50% + ${cardWidth} * 0.95)`,
+        transform: "translate(-50%, -50%) scale(0.92) perspective(1000px) rotateY(-15deg)",
+        opacity: 0.7,
+        filter: "brightness(0.8)",
+        zIndex: 3,
+        pointerEvents: "auto",
+      };
+    } else if (diff === 2) {
+      styles = {
+        left: `calc(50% + ${cardWidth} * 1.8)`,
+        transform: "translate(-50%, -50%) scale(0.82)",
+        opacity: 0.3,
+        filter: "brightness(0.7) blur(2px)",
+        zIndex: 1,
+      };
+    }
+    
+    return styles;
+  };
+
+  return (
+    <div className="relative flex h-full w-full flex-col items-center justify-start overflow-hidden px-4 pt-24 pb-12">
+      
+      {/* HEADING - Pinned near top */}
+      <div className="relative z-20 flex shrink-0 flex-col items-center text-center">
+        <p className="mb-3 font-mono text-[11px] font-bold uppercase tracking-[0.3em] text-amber-400 drop-shadow-md">
+          {eyebrow}
+        </p>
+        <h2 className="font-serif text-3xl font-bold tracking-tight text-white sm:text-4xl lg:text-5xl drop-shadow-lg">
+          {heading}
+        </h2>
+      </div>
+
+      {/* SCENE WRAPPER - takes available space and centers scene */}
+      <div className="relative z-10 flex flex-1 w-full items-center justify-center min-h-[450px] mt-12">
+        {/* SPOTLIGHT SCENE */}
+        <div 
+          className="relative w-full max-w-[1200px] h-[450px] shrink-0 flex items-center justify-center"
+        onMouseEnter={() => setPaused(true)}
+        onMouseLeave={() => setPaused(false)}
+      >
+        
+        {/* Glow */}
+        <div 
+          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full pointer-events-none z-0"
+          style={{
+            width: "600px",
+            height: "600px",
+            background: "radial-gradient(circle, rgba(245, 158, 11, 0.15) 0%, rgba(245, 158, 11, 0.08) 20%, rgba(245, 158, 11, 0.03) 40%, rgba(0, 0, 0, 0) 70%)",
+            filter: "blur(25px)"
+          }}
+        />
+
+
+        {/* Cards */}
+        {items.map((item, index) => {
+          const posStyle = getPositionStyles(index);
+          
+          return (
+            <div
+              key={item.id}
+              onClick={() => {
+                if (index !== current) {
+                  setCurrent(index);
+                } else {
+                  navigate(`/${type}/${item.id}`, { state: item });
+                }
+              }}
+              className="
+                absolute 
+                top-1/2 
+                -translate-y-1/2
+                w-[clamp(200px,18vw,280px)] 
+                h-[clamp(260px,22vw,350px)] 
+                rounded-2xl 
+                overflow-hidden 
+                cursor-pointer 
+                transition-all 
+                duration-700 
+                ease-[cubic-bezier(.77,0,.18,1)]
+                border 
+                border-white/10 
+                bg-stone-900/80 
+                backdrop-blur-md
+                hover:border-white/20
+              "
+              style={posStyle}
+            >
+              {/* IMAGE */}
+              <div className="absolute inset-0 z-0">
+                <img
+                  src={item.image}
+                  alt={item.name || item.title}
+                  className="h-full w-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+              </div>
+
+              {/* CONTENT OVERLAY */}
+              <div className="absolute inset-0 z-10 flex flex-col justify-between p-4">
+                
+                {/* Top Badges */}
+                <div className="flex justify-between items-start w-full">
+                  <div className="flex h-7 w-7 items-center justify-center rounded-full bg-amber-500 text-[11px] font-bold text-white shadow-lg">
+                    {index + 1}
+                  </div>
+
+                  {isOffer && item.discount && (
+                    <div className="inline-flex items-center gap-1 rounded-full bg-emerald-500/90 px-2.5 py-1 text-[10px] font-bold text-white shadow-md">
+                      <FiPercent className="h-2.5 w-2.5" />
+                      {item.discount} OFF
+                    </div>
+                  )}
+                </div>
+
+                {/* Bottom Info */}
+                <div>
+                  <h3 className="text-base font-semibold leading-snug text-white drop-shadow-md">
+                    {item.name || item.title}
+                  </h3>
+
+                  <p className="mt-1.5 inline-flex items-center gap-1 text-xs text-stone-300 drop-shadow-md">
+                    <FiMapPin className="h-3 w-3 text-amber-500" />
+                    {item.location}
+                  </p>
+
+                  <div className="mt-2 flex items-center justify-between">
+                    <div className="flex items-baseline gap-1.5">
+                      <span className="text-lg font-bold text-white drop-shadow-md">
+                        {item.price}
+                      </span>
+                      <span className="text-[10px] text-stone-400">/ night</span>
+                    </div>
+
+                    <div className="inline-flex items-center gap-1 rounded-full bg-black/50 px-2 py-0.5 text-xs font-semibold text-amber-300 backdrop-blur-sm">
+                      <FiStar className="h-3 w-3" />
+                      {item.rating}
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          );
+        })}
+
+        </div>
+      </div>
+
+      {/* EXPLORE MORE BUTTON - Pushed to bottom */}
+      <div className="relative z-20 flex shrink-0 justify-center mt-auto">
+        {exploreLink && (
+          <button
+            type="button"
+            onClick={() => navigate(exploreLink)}
+            className="inline-flex items-center gap-3 rounded-full bg-gradient-to-r from-amber-500 to-amber-600 px-8 py-3.5 text-base font-bold tracking-wide text-white shadow-lg transition-all hover:-translate-y-1 hover:shadow-xl hover:shadow-amber-500/30"
+          >
+            {exploreLabel}
+            <FiArrowUpRight className="h-5 w-5" />
+          </button>
+        )}
+      </div>
+
     </div>
   );
 };

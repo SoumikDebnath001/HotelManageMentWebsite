@@ -51,8 +51,71 @@ const MultipleImageUpload = async (req, res) => {
   }
 };
 
+const profileImageUpload = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ status: false, message: "No file uploaded" });
+    }
+    let uploadData = await S3.doUpload(req, "profile_images");
+    return res.status(200).json({
+      status: true,
+      url: uploadData.url,
+    });
+  } catch (error) {
+    console.error("Upload Error:", error);
+    return res.status(500).json({
+      status: false,
+      message: "Failed to upload profile image",
+      error: error.message,
+    });
+  }
+};
+
+const hotelImageUpload = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ status: false, message: "No file uploaded" });
+    }
+    let uploadData = await S3.doUpload(req, "hotel_images");
+    return res.status(200).json({
+      status: true,
+      url: uploadData.url,
+    });
+  } catch (error) {
+    console.error("Upload Error:", error);
+    return res.status(500).json({
+      status: false,
+      message: "Failed to upload hotel image",
+      error: error.message,
+    });
+  }
+};
+
+const hotelVideoUpload = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ status: false, message: "No file uploaded" });
+    }
+    let uploadData = await videos3.doUpload(req, "hotel_videos");
+    return res.status(200).json({
+      status: true,
+      url: uploadData.url,
+    });
+  } catch (error) {
+    console.error("Upload Error:", error);
+    return res.status(500).json({
+      status: false,
+      message: "Failed to upload hotel video",
+      error: error.message,
+    });
+  }
+};
+
 module.exports={
     ImageUpload,
     videoUpload,
-    MultipleImageUpload
+    MultipleImageUpload,
+    profileImageUpload,
+    hotelImageUpload,
+    hotelVideoUpload
 }

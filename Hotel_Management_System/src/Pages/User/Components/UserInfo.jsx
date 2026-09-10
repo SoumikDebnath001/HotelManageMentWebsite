@@ -1,14 +1,19 @@
-import React, { useState, useEffect } from "react";
-import { FiUser, FiMail, FiPhone, FiMapPin, FiSave, FiEdit3, FiInfo } from "react-icons/fi";
+import React, { useState, useEffect, useRef } from "react";
+import { useDispatch } from "react-redux";
+import { FiUser, FiMail, FiPhone, FiMapPin, FiSave, FiEdit3, FiInfo, FiCamera, FiUploadCloud } from "react-icons/fi";
 import GlassCard from "../../../Features/Auth/Components/GlassCard";
-import { getUserProfile, updateUserProfile } from "../../../Services/auth.service";
+import { getUserProfile, updateUserProfile, uploadUserProfileImage } from "../../../Services/auth.service";
+import { updateUserImage } from "../../../Store/Slices/AuthSlice";
 import toast from "react-hot-toast";
 
 const UserInfo = () => {
+  const dispatch = useDispatch();
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const fileInputRef = useRef(null);
   
   const [formData, setFormData] = useState({
     firstMiddleName: "",
@@ -108,6 +113,35 @@ const UserInfo = () => {
       toast.error("Error updating profile");
     }
     setSaving(false);
+  };
+
+  const handleImageUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingImage(true);
+    try {
+      const uploadRes = await uploadUserProfileImage(file);
+      if (uploadRes?.data?.status && uploadRes?.data?.url) {
+        const imageUrl = uploadRes.data.url;
+        // Immediately update profile with new image
+        const updateRes = await updateUserProfile({ image: imageUrl });
+        
+        if (updateRes?.data?.status) {
+          toast.success("Profile image updated");
+          dispatch(updateUserImage(imageUrl)); // Update Redux state
+          loadProfile(); // Reload to get fresh data
+        } else {
+          toast.error(updateRes?.data?.message || "Failed to save profile image");
+        }
+      } else {
+        toast.error("Failed to upload image");
+      }
+    } catch (error) {
+      toast.error("Error uploading image");
+    }
+    setUploadingImage(false);
+    if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
   const calculateCompleteness = () => {
@@ -249,9 +283,28 @@ const UserInfo = () => {
                 </svg>
               )}
               
-              <div className="z-10 flex h-20 w-20 items-center justify-center rounded-full border border-amber-500/40 bg-amber-500/20 text-amber-300 shadow-inner">
-                <FiUser className="h-10 w-10" />
+              <div className="z-10 relative group flex h-20 w-20 items-center justify-center rounded-full border border-amber-500/40 bg-amber-500/20 text-amber-300 shadow-inner overflow-hidden cursor-pointer" onClick={() => fileInputRef.current?.click()}>
+                {profile?.image ? (
+                  <img src={profile.image} alt="Profile" className="h-full w-full object-cover" />
+                ) : (
+                  <FiUser className="h-10 w-10" />
+                )}
+                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity duration-300">
+                  {uploadingImage ? (
+                     <div className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
+                  ) : (
+                    <FiCamera className="h-6 w-6 text-white" />
+                  )}
+                </div>
               </div>
+              
+              <input
+                type="file"
+                ref={fileInputRef}
+                accept="image/*"
+                onChange={handleImageUpload}
+                className="hidden"
+              />
 
               {completeness < 100 && (
                 <div className="absolute -bottom-2 -right-2 z-20 flex h-8 w-8 items-center justify-center rounded-full bg-stone-900 font-bold text-xs text-amber-400 border border-amber-500/30">

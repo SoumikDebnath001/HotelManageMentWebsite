@@ -13,6 +13,7 @@ const HotelDetails = () => {
   const [hotel, setHotel] = useState(null);
   const [rooms, setRooms] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [activeHeroImage, setActiveHeroImage] = useState(null);
   
   // Modal State
   const [selectedRoom, setSelectedRoom] = useState(null);
@@ -30,7 +31,12 @@ const HotelDetails = () => {
       ]);
 
       if (hotelRes?.data?.status) {
-        setHotel(hotelRes.data.data);
+        const hotelData = hotelRes.data.data;
+        setHotel(hotelData);
+        // Set the first image (cover) as default hero
+        if (hotelData.image && hotelData.image.length > 0) {
+          setActiveHeroImage(hotelData.image[0]);
+        }
       } else {
         toast.error("Failed to load hotel details.");
         navigate("/rooms");
@@ -56,6 +62,10 @@ const HotelDetails = () => {
 
   if (!hotel) return null;
 
+  const coverImage = hotel.image && hotel.image.length > 0 ? hotel.image[0] : null;
+  const galleryImages = hotel.image && hotel.image.length > 1 ? hotel.image.slice(1) : [];
+  const allImages = hotel.image || [];
+
   return (
     <div className="animate-in fade-in zoom-in-95 duration-500 pb-20">
       
@@ -70,11 +80,11 @@ const HotelDetails = () => {
       {/* Hero Section */}
       <GlassCard className="border-white/10 p-0 overflow-hidden mb-12">
         <div className="relative h-64 md:h-[400px] w-full bg-stone-900">
-          {hotel.images && hotel.images.length > 0 ? (
+          {activeHeroImage || coverImage ? (
             <img
-              src={hotel.images[0]}
+              src={activeHeroImage || coverImage}
               alt={hotel.hotelName}
-              className="h-full w-full object-cover"
+              className="h-full w-full object-cover transition-all duration-500"
             />
           ) : (
             <div className="flex h-full items-center justify-center text-stone-600 italic">
@@ -104,6 +114,33 @@ const HotelDetails = () => {
             </div>
           </div>
         </div>
+
+        {/* Gallery Thumbnails Strip */}
+        {allImages.length > 1 && (
+          <div className="p-3 bg-black/60 border-t border-white/10">
+            <div className="flex gap-2 overflow-x-auto pb-1">
+              {allImages.map((imgUrl, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setActiveHeroImage(imgUrl)}
+                  className={`flex-shrink-0 h-16 w-24 rounded-lg overflow-hidden border-2 transition-all ${
+                    activeHeroImage === imgUrl
+                      ? "border-amber-500 ring-1 ring-amber-500/40 scale-105"
+                      : "border-white/10 hover:border-white/30 opacity-70 hover:opacity-100"
+                  }`}
+                >
+                  <img src={imgUrl} alt={idx === 0 ? "Cover" : `Gallery ${idx}`} className="h-full w-full object-cover" />
+                </button>
+              ))}
+            </div>
+            <div className="flex items-center gap-2 mt-1.5">
+              <span className="text-[10px] text-stone-500 uppercase tracking-wider font-semibold">
+                {activeHeroImage === coverImage || activeHeroImage === allImages[0] ? "Cover Image" : "Gallery View"} 
+                &nbsp;·&nbsp; {allImages.length} {allImages.length === 1 ? "photo" : "photos"}
+              </span>
+            </div>
+          </div>
+        )}
 
         {/* Info Grid */}
         <div className="p-6 md:p-10 grid grid-cols-1 md:grid-cols-3 gap-10">

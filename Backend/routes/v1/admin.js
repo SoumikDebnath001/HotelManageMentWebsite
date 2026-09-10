@@ -8,6 +8,7 @@ var upload = multer({ storage: storage });
 const adminController = require('../../controllers/admin/auth/adminController');
 const adminHotelController = require('../../controllers/admin/hotelController/adminHotelController');
 const roomTypeController = require('../../controllers/shared/HotelControllers/roomTypeController');
+const ImageUpload = require('../../controllers/shared/Uploads/imageUpload');
 
 const { requireAdmin } = require('../../service/middleware');
 
@@ -30,5 +31,12 @@ router.post('/createManager', adminHotelController.createManager);
 router.get('/getMyManagers', adminHotelController.getMyManagers);
 router.post('/updateManager', adminHotelController.updateManager);
 router.post('/deleteManager', adminHotelController.deleteManager);
+
+//=============== Upload Routes
+router.post('/image/upload', upload.single('image'), ImageUpload.ImageUpload);
+router.post('/uploadmultipleimages', upload.array('images', 10), ImageUpload.MultipleImageUpload);
+router.post('/upload/profile-image', upload.single('image'), ImageUpload.profileImageUpload);
+router.post('/upload/hotel-image', upload.single('image'), ImageUpload.hotelImageUpload);
+router.post('/upload/hotel-video', upload.single('video'), ImageUpload.hotelVideoUpload);
 
 module.exports = router;

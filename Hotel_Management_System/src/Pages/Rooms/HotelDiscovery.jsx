@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { getPublicHotels } from "../../Services/booking.service";
 import { addToWishlist, getMyWishlist, removeFromWishlist } from "../../Services/user.service";
@@ -8,13 +8,19 @@ import { FiMapPin, FiStar, FiSearch, FiFilter, FiArrowLeft, FiHeart } from "reac
 import toast from "react-hot-toast";
 
 const HotelDiscovery = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const initialSearch = queryParams.get("search") || "";
+  const filterParam = queryParams.get("filter") || "";
+
   const [hotels, setHotels] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState(initialSearch);
   
   // Filter States
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [minStarRating, setMinStarRating] = useState(0);
+  const [minStarRating, setMinStarRating] = useState(filterParam === "top-offers" ? 4 : 0);
   const [selectedAmenities, setSelectedAmenities] = useState([]);
 
   // Wishlist States
@@ -23,7 +29,7 @@ const HotelDiscovery = () => {
   const [likingInProgress, setLikingInProgress] = useState({});
   const { isAuthenticated, userType } = useSelector((state) => state.auth) || {};
   
-  const navigate = useNavigate();
+
 
   const commonAmenities = ["Free Wi-Fi", "Pool", "Spa", "Gym", "Parking", "Restaurant", "Bar"];
 
@@ -194,8 +200,12 @@ const HotelDiscovery = () => {
 
         {/* Center: Title and Subtitle */}
         <div className="w-full md:w-auto md:absolute md:left-1/2 md:-translate-x-1/2 text-center md:text-center z-0">
-          <h1 className="font-serif text-3xl md:text-4xl font-bold text-white mb-2">Discover Extraordinary Stays</h1>
-          <p className="text-stone-400 text-sm md:text-base">Find the perfect hotel for your next adventure.</p>
+          <h1 className="font-serif text-3xl md:text-4xl font-bold text-white mb-2">
+            {filterParam === "top-offers" ? "Top Offers Available" : "Discover Extraordinary Stays"}
+          </h1>
+          <p className="text-stone-400 text-sm md:text-base">
+            {filterParam === "top-offers" ? "Showing the best deals with 4+ star ratings." : "Find the perfect hotel for your next adventure."}
+          </p>
         </div>
 
       </div>
@@ -219,9 +229,9 @@ const HotelDiscovery = () => {
             >
               {/* Hotel Image (placeholder if none) */}
               <div className="relative h-56 w-full overflow-hidden bg-stone-900">
-                {hotel.images && hotel.images.length > 0 ? (
+                {hotel.image && hotel.image.length > 0 ? (
                   <img
-                    src={hotel.images[0]}
+                    src={hotel.image[0]}
                     alt={hotel.hotelName}
                     className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
                   />

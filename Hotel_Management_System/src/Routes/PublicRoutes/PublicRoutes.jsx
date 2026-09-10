@@ -9,6 +9,8 @@ import About from "../../Pages/About";
 import ForgotPasswordPage from "../../Features/Auth/Pages/ForgotPasswordPage";
 import DashboardPage from "../../Pages/DashboardPage";
 import RoomsPage from "../../Pages/Rooms/RoomsPage";
+import StayDetailPage from "../../Pages/StayDetailPage";
+import HomeStaysPage from "../../Pages/HomeStaysPage";
 
 const PublicRoutes = () => {
   return (
@@ -19,6 +21,9 @@ const PublicRoutes = () => {
         <Route path="about" element={<About />} />
         <Route path="forgot-password" element={<ForgotPasswordPage />} />
         <Route path="dashboard" element={<DashboardPage />} />
+        <Route path="stay/:id" element={<StayDetailPage />} />
+        <Route path="offer/:id" element={<StayDetailPage />} />
+        <Route path="homestays" element={<HomeStaysPage />} />
       </Route>
       {/* Rooms flow has its own custom layout without standard navbar */}
       <Route path="rooms/*" element={<RoomsPage />} />
