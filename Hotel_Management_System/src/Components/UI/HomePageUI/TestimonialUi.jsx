@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { FiArrowUpRight, FiStar } from "react-icons/fi";
 
 /* =========================================================
@@ -121,14 +121,13 @@ const TestimonialCard = ({ testimonial }) => {
         rounded-[20px]
         border
         border-white/[0.13]
-        bg-white/[0.055]
+        bg-stone-900/70
         p-5
         shadow-[0_15px_45px_rgba(0,0,0,0.18)]
-        backdrop-blur-2xl
-        transition-all
+        transition-colors
         duration-500
         hover:border-amber-400/25
-        hover:bg-white/[0.08]
+        hover:bg-stone-900/85
       "
     >
       {/* Glow */}
@@ -264,6 +263,7 @@ const TestimonialColumn = ({
   cards,
   direction,
   duration,
+  isVisible,
 }) => {
   const items = [...cards, ...cards];
 
@@ -324,6 +324,9 @@ const TestimonialColumn = ({
         `}
         style={{
           animationDuration: `${duration}s`,
+          animationPlayState: isVisible
+            ? "running"
+            : "paused",
         }}
       >
         {items.map((testimonial, index) => (
@@ -342,6 +345,35 @@ const TestimonialColumn = ({
 ========================================================= */
 
 const TestimonialUi = () => {
+  const sectionRef = useRef(null);
+
+  const [isVisible, setIsVisible] = useState(false);
+
+  /* =========================================================
+     PAUSE MARQUEE OFF SCREEN
+
+     The three columns animate forever; keep
+     them paused whenever the section is not
+     in the viewport.
+  ========================================================= */
+
+  useEffect(() => {
+    if (!sectionRef.current) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsVisible(entry.isIntersecting);
+      },
+      {
+        rootMargin: "100px 0px",
+      }
+    );
+
+    observer.observe(sectionRef.current);
+
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <>
       {/* ===================================================
@@ -396,6 +428,7 @@ const TestimonialUi = () => {
       =================================================== */}
 
       <section
+        ref={sectionRef}
         className="
           relative
           overflow-hidden
@@ -530,6 +563,7 @@ const TestimonialUi = () => {
               cards={columnOne}
               direction="up"
               duration={24}
+              isVisible={isVisible}
             />
 
             {/* COLUMN 2
@@ -540,6 +574,7 @@ const TestimonialUi = () => {
               cards={columnTwo}
               direction="down"
               duration={28}
+              isVisible={isVisible}
             />
 
             {/* COLUMN 3
@@ -550,6 +585,7 @@ const TestimonialUi = () => {
               cards={columnThree}
               direction="up"
               duration={25}
+              isVisible={isVisible}
             />
           </div>
         </div>

@@ -29,6 +29,7 @@ router.post('/changePassword', userController.changePassword);
 
 //=============== Hotels & Rooms Routes
 router.get('/getAllHotels', userHotelController.getAllHotels);
+router.get('/getHotelFilterOptions', userHotelController.getHotelFilterOptions);
 router.get('/getHotelById', userHotelController.getHotelById);
 router.get('/getRoomsByHotelId', userHotelController.getRoomsByHotelId);
 router.get('/roomAvailability', userHotelController.roomAvailability);

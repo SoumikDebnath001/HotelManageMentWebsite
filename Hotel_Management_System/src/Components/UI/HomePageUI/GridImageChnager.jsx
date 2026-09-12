@@ -45,6 +45,9 @@ const diagonalDelays = Array.from({ length: 16 }, (_, index) => {
 
 const GridImageChnager = () => {
   const sectionRef = useRef(null);
+  const textRef = useRef(null);
+  const imageRef = useRef(null);
+  const innerImageRef = useRef(null);
   const hotelIndexRef = useRef(0);
 
   const [hotelIndex, setHotelIndex] = useState(0);
@@ -53,18 +56,27 @@ const GridImageChnager = () => {
   const [transitionColorIndex, setTransitionColorIndex] =
     useState(0);
 
-  const [parallax, setParallax] = useState(0);
-
   /* =========================================================
      PARALLAX
+
+     Written straight to the DOM through refs
+     so scrolling never re-renders the section
+     (7 images + 16 tiles).
   ========================================================= */
 
   useEffect(() => {
     let ticking = false;
+    let lastValue = null;
 
     const updateParallax = () => {
-      if (!sectionRef.current) {
-        ticking = false;
+      ticking = false;
+
+      if (
+        !sectionRef.current ||
+        !textRef.current ||
+        !imageRef.current ||
+        !innerImageRef.current
+      ) {
         return;
       }
 
@@ -85,9 +97,24 @@ const GridImageChnager = () => {
         Math.min(1, distance / window.innerHeight)
       );
 
-      setParallax(value);
+      if (value === lastValue) {
+        return;
+      }
 
-      ticking = false;
+      lastValue = value;
+
+      const imageMove = value * 55;
+      const textMove = value * -22;
+      const innerImageMove = imageMove * -0.3;
+
+      textRef.current.style.transform =
+        `translate3d(0, ${textMove}px, 0)`;
+
+      imageRef.current.style.transform =
+        `translate3d(0, ${imageMove}px, 0)`;
+
+      innerImageRef.current.style.transform =
+        `translate3d(0, ${innerImageMove}px, 0)`;
     };
 
     const handleScroll = () => {
@@ -177,14 +204,6 @@ const GridImageChnager = () => {
     };
   }, []);
 
-  /* =========================================================
-     PARALLAX VALUES
-  ========================================================= */
-
-  const imageMove = parallax * 55;
-  const textMove = parallax * -22;
-  const innerImageMove = imageMove * -0.3;
-
   return (
     <>
       {/* =====================================================
@@ -234,17 +253,11 @@ const GridImageChnager = () => {
           ================================================= */}
 
           <div
+            ref={textRef}
             className="
               max-w-xl
               will-change-transform
             "
-            style={{
-              transform: `translate3d(
-                0,
-                ${textMove}px,
-                0
-              )`,
-            }}
           >
             {/* ===============================================
                 ONLY TEXT BACKGROUND IS BLURRED
@@ -523,6 +536,7 @@ const GridImageChnager = () => {
               "
             >
               <div
+                ref={imageRef}
                 className="
                   relative
 
@@ -535,52 +549,53 @@ const GridImageChnager = () => {
 
                   will-change-transform
                 "
-                style={{
-                  transform: `translate3d(
-                    0,
-                    ${imageMove}px,
-                    0
-                  )`,
-                }}
               >
-                {/* HOTEL IMAGES */}
+                {/* HOTEL IMAGES
 
-                {hotelImages.map((image, index) => (
-                  <img
-                    key={index}
-                    src={image}
-                    alt={`Luxury Hotel ${index + 1}`}
-                    className={`
-                      absolute
-                      inset-[-5%]
+                    One shared wrapper carries the inner
+                    parallax instead of moving 7 images
+                    individually.
+                */}
 
-                      h-[110%]
-                      w-[110%]
+                <div
+                  ref={innerImageRef}
+                  className="
+                    absolute
+                    inset-0
 
-                      object-cover
+                    will-change-transform
+                  "
+                >
+                  {hotelImages.map((image, index) => (
+                    <img
+                      key={index}
+                      src={image}
+                      alt={`Luxury Hotel ${index + 1}`}
+                      loading={index === 0 ? "eager" : "lazy"}
+                      decoding="async"
+                      className={`
+                        absolute
+                        inset-[-5%]
 
-                      transition-opacity
-                      duration-[1300ms]
+                        h-[110%]
+                        w-[110%]
 
-                      ease-[cubic-bezier(.22,1,.36,1)]
+                        object-cover
 
-                      will-change-transform
+                        transition-opacity
+                        duration-[1300ms]
 
-                      ${
-                        hotelIndex === index
-                          ? "opacity-100"
-                          : "opacity-0"
-                      }
-                    `}
-                    style={{
-                      transform: `translate3d(
-                        0,
-                        ${innerImageMove}px,
-                        0
-                      )`,
-                    }}
-                  />
-                ))}
+                        ease-[cubic-bezier(.22,1,.36,1)]
+
+                        ${
+                          hotelIndex === index
+                            ? "opacity-100"
+                            : "opacity-0"
+                        }
+                      `}
+                    />
+                  ))}
+                </div>
 
                 {/* IMAGE OVERLAY */}
 

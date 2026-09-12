@@ -4,6 +4,7 @@ const HotelRoomBooking = require("../../../Models/hotelBookingModel");
 const Payment = require("../../../Models/paymentModel");
 const { Validator } = require("node-input-validator");
 const Razorpay = require("razorpay");
+const { applyOffer } = require("../../../service/offerService");
 
 // Generate Transaction Id e.g. TXN-1720000000000-4821
 const generateTransactionId = () => {
@@ -305,8 +306,27 @@ const createRazorpayOrder = async (req, res) => {
     }
 
     const room = rooms[0];
+
+    if (room.availabilityStatus == "maintenance") {
+      return res.status(400).json({ status: false, message: "Room is under maintenance" });
+    }
+
     const numberOfNights = Math.ceil((checkOutDate - checkInDate) / (1000 * 60 * 60 * 24));
     let totalAmount = numberOfNights * room.pricePerNight;
+
+    // Optional offer - same calculation as bookRoom so the charged amount matches the booking
+    let discountAmount = 0;
+    let offerCode = "";
+    if (req.body.offerCode) {
+      const offerResult = await applyOffer(req.body.offerCode, room.hotelId, totalAmount);
+      if (offerResult.error) {
+        return res.status(400).json({ status: false, message: offerResult.error });
+      }
+      discountAmount = offerResult.discountAmount;
+      offerCode = offerResult.offer.offerCode;
+    }
+
+    const payableAmount = totalAmount - discountAmount;
     
     // Check overlapping bookings to ensure availability
     const overlappingBookings = await HotelRoomBooking.aggregate([
@@ -335,7 +355,7 @@ const createRazorpayOrder = async (req, res) => {
     });
 
     const options = {
-      amount: Math.round(totalAmount * 100), // amount in smallest currency unit
+      amount: Math.round(payableAmount * 100), // amount in smallest currency unit
       currency: "INR", 
       receipt: `tmp_${Date.now()}`,
     };
@@ -349,7 +369,15 @@ const createRazorpayOrder = async (req, res) => {
         orderId: order.id,
         amount: options.amount,
         currency: options.currency,
-        keyId: process.env.RAZORPAY_KEY_ID
+        keyId: process.env.RAZORPAY_KEY_ID,
+        breakdown: {
+          pricePerNight: room.pricePerNight,
+          numberOfNights: numberOfNights,
+          totalAmount: totalAmount,
+          discountAmount: discountAmount,
+          payableAmount: payableAmount,
+          offerCode: offerCode,
+        },
       },
     });
 

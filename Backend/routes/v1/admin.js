@@ -10,6 +10,7 @@ const adminHotelController = require('../../controllers/admin/hotelController/ad
 const roomTypeController = require('../../controllers/shared/HotelControllers/roomTypeController');
 const ImageUpload = require('../../controllers/shared/Uploads/imageUpload');
 
+const amenityController = require('../../controllers/shared/HotelControllers/amenityController');
 const { requireAdmin } = require('../../service/middleware');
 
 router.use(requireAdmin);
@@ -23,6 +24,7 @@ router.get('/getMyDashboardStats', adminHotelController.getMyDashboardStats);
 //=============== Hotel Routes
 router.post('/createHotel', adminHotelController.createHotel);
 router.get('/getMyHotels', adminHotelController.getMyHotels);
+router.get('/getAmenities', amenityController.getAmenities);
 router.post('/updateHotel', adminHotelController.updateHotel);
 router.post('/deleteHotel', adminHotelController.deleteHotel);
 

@@ -56,6 +56,15 @@ const getHotelBookings = async (req, res) => {
       match.bookingStatus = req.query.bookingStatus;
     }
 
+    if (req.query.paymentStatus) {
+      match.paymentStatus = req.query.paymentStatus;
+    }
+
+    if (req.query.search) {
+      const regex = { $regex: String(req.query.search).replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), $options: "i" };
+      match.$or = [{ userName: regex }, { roomNumber: regex }, { roomType: regex }, { offerCode: regex }];
+    }
+
     const bookings = await HotelRoomBooking.aggregate([
       {
         $match: match,

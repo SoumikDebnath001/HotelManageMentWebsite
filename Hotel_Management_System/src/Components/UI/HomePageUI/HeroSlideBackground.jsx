@@ -330,14 +330,24 @@ const smooth = (value) => {
 const HeroSlideBackground = () => {
   const navigate = useNavigate();
   const sectionRef = useRef(null);
+  const stickyRef = useRef(null);
   const centerRef = useRef(null);
 
   const animationRef = useRef(null);
   const isAnimatingRef = useRef(false);
+  const scrollTickingRef = useRef(false);
 
   const [progress, setProgress] = useState(0);
 
-  const [viewport, setViewport] = useState({
+  /*
+    Viewport size + center cell rect.
+
+    Measured once on mount and on resize
+    instead of calling getBoundingClientRect
+    on every render / every scroll event.
+  */
+
+  const [layout, setLayout] = useState({
     width:
       typeof window !== "undefined"
         ? window.innerWidth
@@ -347,6 +357,8 @@ const HeroSlideBackground = () => {
       typeof window !== "undefined"
         ? window.innerHeight
         : 1080,
+
+    center: null,
   });
 
   /* ========================================================
@@ -422,14 +434,48 @@ const HeroSlideBackground = () => {
   ======================================================== */
 
   const updateProgress = () => {
-    const value =
-      getProgress();
+    setProgress(getProgress());
+  };
 
-    setProgress(value);
+  /* ========================================================
+     MEASURE LAYOUT
 
-    setViewport({
+     The center cell is measured relative to the
+     sticky viewport so the value stays valid no
+     matter where the page is scrolled.
+  ======================================================== */
+
+  const measureLayout = () => {
+    let center = null;
+
+    if (
+      stickyRef.current &&
+      centerRef.current
+    ) {
+      const stickyRect =
+        stickyRef.current.getBoundingClientRect();
+
+      const centerRect =
+        centerRef.current.getBoundingClientRect();
+
+      center = {
+        left:
+          centerRect.left -
+          stickyRect.left,
+
+        top:
+          centerRect.top -
+          stickyRect.top,
+
+        width: centerRect.width,
+        height: centerRect.height,
+      };
+    }
+
+    setLayout({
       width: window.innerWidth,
       height: window.innerHeight,
+      center,
     });
   };
 
@@ -696,23 +742,37 @@ const HeroSlideBackground = () => {
   ======================================================== */
 
   useEffect(() => {
+    /*
+      Throttle to one update per frame.
+      While the custom animation runs it
+      already drives progress itself.
+    */
+
     const handleScroll = () => {
       if (
-        !isAnimatingRef.current
+        isAnimatingRef.current ||
+        scrollTickingRef.current
       ) {
-        updateProgress();
+        return;
       }
+
+      scrollTickingRef.current = true;
+
+      requestAnimationFrame(() => {
+        scrollTickingRef.current = false;
+
+        if (!isAnimatingRef.current) {
+          updateProgress();
+        }
+      });
     };
 
     const handleResize = () => {
-      setViewport({
-        width: window.innerWidth,
-        height: window.innerHeight,
-      });
-
+      measureLayout();
       updateProgress();
     };
 
+    measureLayout();
     updateProgress();
 
     window.addEventListener(
@@ -1031,6 +1091,19 @@ const HeroSlideBackground = () => {
   const heroData =
     slides[heroScene];
 
+  /*
+    Content fades in only once the hero is
+    almost fullscreen. While fully transparent
+    it is also hidden so the browser skips
+    painting the card grid entirely.
+  */
+
+  const contentOpacity =
+    clamp(
+      (heroExpansion - 0.35) /
+        0.35
+    );
+
   /* ========================================================
      HERO POSITION
   ======================================================== */
@@ -1044,11 +1117,10 @@ const HeroSlideBackground = () => {
   };
 
   if (
-    centerRef.current &&
+    layout.center &&
     progress > 0
   ) {
-    const rect =
-      centerRef.current.getBoundingClientRect();
+    const rect = layout.center;
 
     heroStyle = {
       left: `${lerp(
@@ -1065,13 +1137,13 @@ const HeroSlideBackground = () => {
 
       width: `${lerp(
         rect.width,
-        viewport.width,
+        layout.width,
         heroExpansion
       )}px`,
 
       height: `${lerp(
         rect.height,
-        viewport.height,
+        layout.height,
         heroExpansion
       )}px`,
 
@@ -1142,6 +1214,7 @@ const HeroSlideBackground = () => {
       =================================================== */}
 
       <div
+        ref={stickyRef}
         className="
           sticky
           top-0
@@ -1172,7 +1245,7 @@ const HeroSlideBackground = () => {
               w-screen
               grid-cols-[22%_56%_22%]
               grid-rows-[20%_60%_20%]
-              gap-[3px]
+              gap-0.75
               bg-[#efefed]
             "
           >
@@ -1343,7 +1416,7 @@ const HeroSlideBackground = () => {
             className="
               absolute
               inset-0
-              bg-gradient-to-t
+              bg-linear-to-t
               from-black/60
               via-black/10
               to-transparent
@@ -1361,18 +1434,18 @@ const HeroSlideBackground = () => {
               justify-center
             "
             style={{
-              opacity: clamp(
-                (heroExpansion -
-                  0.35) /
-                  0.35
-              ),
+              opacity: contentOpacity,
+              visibility:
+                contentOpacity === 0
+                  ? "hidden"
+                  : "visible",
               pointerEvents: heroExpansion > 0.7 ? "auto" : "none",
             }}
           >
             {/* Slide 2: Top 10 Home Stays */}
 
             {heroData.contentType === "topStays" && (
-              <SpotlightCarousel
+              <TopPicksGrid
                 heading="Top 10 Home Stays of the Year"
                 eyebrow="CURATED PICKS"
                 items={topStays}
@@ -1386,7 +1459,7 @@ const HeroSlideBackground = () => {
             {/* Slide 3: Top 10 Offers */}
 
             {heroData.contentType === "topOffers" && (
-              <SpotlightCarousel
+              <TopPicksGrid
                 heading="Top 10 Offers"
                 eyebrow="EXCLUSIVE DEALS"
                 items={topOffers}
@@ -1419,7 +1492,7 @@ const HeroSlideBackground = () => {
                     text-5xl
                     font-semibold
                     leading-[0.9]
-                    tracking-[-0.05em]
+                    tracking-tighter
                     sm:text-7xl
                     lg:text-8xl
                   "
@@ -1761,22 +1834,22 @@ const SlideCardCarousel = ({
             className="
               group
               relative
-              w-[260px]
+              w-65
               shrink-0
               cursor-pointer
               overflow-hidden
               rounded-2xl
               border
               border-white/10
-              bg-white/[0.06]
+              bg-white/6
               backdrop-blur-xl
               transition-all
               duration-300
               hover:-translate-y-1
               hover:border-white/20
-              hover:bg-white/[0.10]
+              hover:bg-white/10
               hover:shadow-[0_15px_40px_rgba(0,0,0,0.4)]
-              sm:w-[280px]
+              sm:w-70
             "
           >
             {/* IMAGE */}
@@ -1799,7 +1872,7 @@ const SlideCardCarousel = ({
                 className="
                   absolute
                   inset-0
-                  bg-gradient-to-t
+                  bg-linear-to-t
                   from-black/50
                   to-transparent
                 "
@@ -1932,10 +2005,207 @@ const SlideCardCarousel = ({
 };
 
 /* =========================================================
-   SPOTLIGHT CAROUSEL
+   TOP PICK CARD
 ========================================================= */
 
-const SpotlightCarousel = ({
+const TopPickCard = ({
+  item,
+  rank,
+  type,
+  navigate,
+}) => {
+  const isOffer = type === "offer";
+
+  return (
+    <div
+      onClick={() =>
+        navigate(`/${type}/${item.id}`, {
+          state: item,
+        })
+      }
+      className="
+        group
+        relative
+        h-[clamp(120px,21vh,210px)]
+        w-full
+        cursor-pointer
+        overflow-hidden
+        rounded-2xl
+        border
+        border-white/10
+        bg-stone-900
+        transition-colors
+        duration-200
+        hover:border-amber-400/40
+      "
+    >
+      {/* IMAGE */}
+
+      <div className="absolute inset-0 z-0">
+        <img
+          src={item.image}
+          alt={item.name || item.title}
+          loading="lazy"
+          decoding="async"
+          className="
+            h-full
+            w-full
+            object-cover
+          "
+        />
+
+        <div
+          className="
+            absolute
+            inset-0
+            bg-linear-to-t
+            from-black/85
+            via-black/25
+            to-transparent
+          "
+        />
+      </div>
+
+      {/* CONTENT OVERLAY */}
+
+      <div
+        className="
+          absolute
+          inset-0
+          z-10
+          flex
+          flex-col
+          justify-between
+          p-3
+        "
+      >
+        {/* TOP BADGES */}
+
+        <div className="flex w-full items-start justify-between">
+          <div
+            className="
+              flex
+              h-6
+              w-6
+              items-center
+              justify-center
+              rounded-full
+              bg-amber-500
+              text-[10px]
+              font-bold
+              text-white
+              shadow-lg
+            "
+          >
+            {rank}
+          </div>
+
+          {isOffer && item.discount && (
+            <div
+              className="
+                inline-flex
+                items-center
+                gap-1
+                rounded-full
+                bg-emerald-500/90
+                px-2
+                py-0.5
+                text-[9px]
+                font-bold
+                text-white
+                shadow-md
+              "
+            >
+              <FiPercent className="h-2.5 w-2.5" />
+              {item.discount} OFF
+            </div>
+          )}
+        </div>
+
+        {/* BOTTOM INFO */}
+
+        <div>
+          <h3
+            className="
+              truncate
+              text-sm
+              font-semibold
+              leading-snug
+              text-white
+              drop-shadow-md
+              group-hover:text-amber-200
+            "
+          >
+            {item.name || item.title}
+          </h3>
+
+          <p
+            className="
+              mt-1
+              flex
+              items-center
+              gap-1
+              truncate
+              text-[11px]
+              text-stone-300
+              drop-shadow-md
+            "
+          >
+            <FiMapPin className="h-3 w-3 shrink-0 text-amber-500" />
+            <span className="truncate">{item.location}</span>
+          </p>
+
+          <div className="mt-1.5 flex items-center justify-between">
+            <div className="flex items-baseline gap-1">
+              <span className="text-base font-bold text-white drop-shadow-md">
+                {item.price}
+              </span>
+
+              <span className="text-[10px] text-stone-400">
+                / night
+              </span>
+
+              {isOffer && item.originalPrice && (
+                <span className="ml-1 text-[10px] text-stone-500 line-through">
+                  {item.originalPrice}
+                </span>
+              )}
+            </div>
+
+            <div
+              className="
+                inline-flex
+                items-center
+                gap-1
+                rounded-full
+                bg-black/50
+                px-1.5
+                py-0.5
+                text-[11px]
+                font-semibold
+                text-amber-300
+              "
+            >
+              <FiStar className="h-3 w-3" />
+              {item.rating}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+/* =========================================================
+   TOP PICKS GRID
+
+   Slide 2 / Slide 3 content.
+
+   Static layout: 2 rows x 5 cards.
+   No auto-rotation, no 3D transforms.
+========================================================= */
+
+const TopPicksGrid = ({
   heading,
   eyebrow,
   items,
@@ -1944,233 +2214,136 @@ const SpotlightCarousel = ({
   exploreLink,
   exploreLabel = "Explore More",
 }) => {
-  const [current, setCurrent] = useState(0);
-  const [paused, setPaused] = useState(false);
-
-  useEffect(() => {
-    if (paused || items.length === 0) return;
-    
-    const timer = setTimeout(() => {
-      setCurrent((prev) => (prev + 1 >= items.length ? 0 : prev + 1));
-    }, 2050); // 850ms transition + 1200ms hold
-
-    return () => clearTimeout(timer);
-  }, [current, paused, items.length]);
-
-  const isOffer = type === "offer";
-  
-  // Base dimensions used for spacing calculation
-  const cardWidth = "clamp(200px, 15vw, 260px)";
-
-  const getPositionStyles = (index) => {
-    let diff = index - current;
-
-    if (diff > items.length / 2) diff -= items.length;
-    if (diff < -items.length / 2) diff += items.length;
-
-    // Default (hidden / out of bounds)
-    let styles = {
-      left: "50%",
-      transform: "translate(-50%, -50%) scale(0.5)",
-      opacity: 0,
-      filter: "brightness(0.5) blur(5px)",
-      zIndex: 0,
-      pointerEvents: "none",
-    };
-
-    if (diff === -2) {
-      styles = {
-        left: `calc(50% - ${cardWidth} * 1.8)`,
-        transform: "translate(-50%, -50%) scale(0.82)",
-        opacity: 0.3,
-        filter: "brightness(0.7) blur(2px)",
-        zIndex: 1,
-      };
-    } else if (diff === -1) {
-      styles = {
-        left: `calc(50% - ${cardWidth} * 0.95)`,
-        transform: "translate(-50%, -50%) scale(0.92) perspective(1000px) rotateY(15deg)",
-        opacity: 0.7,
-        filter: "brightness(0.8)",
-        zIndex: 3,
-        pointerEvents: "auto",
-      };
-    } else if (diff === 0) {
-      styles = {
-        left: "50%",
-        transform: "translate(-50%, -50%) scale(1.15)",
-        opacity: 1,
-        filter: "brightness(1.1)",
-        zIndex: 10,
-        pointerEvents: "auto",
-        boxShadow: "0 25px 60px rgba(0,0,0,0.6), 0 0 40px rgba(245,158,11,0.15)",
-        borderColor: "rgba(245, 158, 11, 0.3)",
-      };
-    } else if (diff === 1) {
-      styles = {
-        left: `calc(50% + ${cardWidth} * 0.95)`,
-        transform: "translate(-50%, -50%) scale(0.92) perspective(1000px) rotateY(-15deg)",
-        opacity: 0.7,
-        filter: "brightness(0.8)",
-        zIndex: 3,
-        pointerEvents: "auto",
-      };
-    } else if (diff === 2) {
-      styles = {
-        left: `calc(50% + ${cardWidth} * 1.8)`,
-        transform: "translate(-50%, -50%) scale(0.82)",
-        opacity: 0.3,
-        filter: "brightness(0.7) blur(2px)",
-        zIndex: 1,
-      };
-    }
-    
-    return styles;
-  };
-
   return (
-    <div className="relative flex h-full w-full flex-col items-center justify-start overflow-hidden px-4 pt-24 pb-12">
-      
-      {/* HEADING - Pinned near top */}
-      <div className="relative z-20 flex shrink-0 flex-col items-center text-center">
-        <p className="mb-3 font-mono text-[11px] font-bold uppercase tracking-[0.3em] text-amber-400 drop-shadow-md">
+    <div
+      className="
+        relative
+        flex
+        h-full
+        w-full
+        flex-col
+        items-center
+        justify-center
+        px-4
+        pb-8
+        pt-16
+        sm:px-8
+        lg:px-16
+      "
+    >
+      {/* HEADING */}
+
+      <div
+        className="
+          relative
+          z-20
+          flex
+          shrink-0
+          flex-col
+          items-center
+          text-center
+        "
+      >
+        <p
+          className="
+            mb-3
+            font-mono
+            text-[11px]
+            font-bold
+            uppercase
+            tracking-[0.3em]
+            text-amber-400
+            drop-shadow-md
+          "
+        >
           {eyebrow}
         </p>
-        <h2 className="font-serif text-3xl font-bold tracking-tight text-white sm:text-4xl lg:text-5xl drop-shadow-lg">
+
+        <h2
+          className="
+            font-serif
+            text-3xl
+            font-bold
+            tracking-tight
+            text-white
+            drop-shadow-lg
+            sm:text-4xl
+            lg:text-5xl
+          "
+        >
           {heading}
         </h2>
       </div>
 
-      {/* SCENE WRAPPER - takes available space and centers scene */}
-      <div className="relative z-10 flex flex-1 w-full items-center justify-center min-h-[450px] mt-12">
-        {/* SPOTLIGHT SCENE */}
-        <div 
-          className="relative w-full max-w-[1200px] h-[450px] shrink-0 flex items-center justify-center"
-        onMouseEnter={() => setPaused(true)}
-        onMouseLeave={() => setPaused(false)}
+      {/* CARD GRID — 2 ROWS x 5 CARDS */}
+
+      <div
+        className="
+          relative
+          z-10
+          mt-8
+          grid
+          w-full
+          max-w-300
+          grid-cols-2
+          gap-3
+          sm:grid-cols-5
+          sm:gap-4
+        "
       >
-        
-        {/* Glow */}
-        <div 
-          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full pointer-events-none z-0"
-          style={{
-            width: "600px",
-            height: "600px",
-            background: "radial-gradient(circle, rgba(245, 158, 11, 0.15) 0%, rgba(245, 158, 11, 0.08) 20%, rgba(245, 158, 11, 0.03) 40%, rgba(0, 0, 0, 0) 70%)",
-            filter: "blur(25px)"
-          }}
-        />
-
-
-        {/* Cards */}
-        {items.map((item, index) => {
-          const posStyle = getPositionStyles(index);
-          
-          return (
-            <div
-              key={item.id}
-              onClick={() => {
-                if (index !== current) {
-                  setCurrent(index);
-                } else {
-                  navigate(`/${type}/${item.id}`, { state: item });
-                }
-              }}
-              className="
-                absolute 
-                top-1/2 
-                -translate-y-1/2
-                w-[clamp(200px,18vw,280px)] 
-                h-[clamp(260px,22vw,350px)] 
-                rounded-2xl 
-                overflow-hidden 
-                cursor-pointer 
-                transition-all 
-                duration-700 
-                ease-[cubic-bezier(.77,0,.18,1)]
-                border 
-                border-white/10 
-                bg-stone-900/80 
-                backdrop-blur-md
-                hover:border-white/20
-              "
-              style={posStyle}
-            >
-              {/* IMAGE */}
-              <div className="absolute inset-0 z-0">
-                <img
-                  src={item.image}
-                  alt={item.name || item.title}
-                  className="h-full w-full object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-              </div>
-
-              {/* CONTENT OVERLAY */}
-              <div className="absolute inset-0 z-10 flex flex-col justify-between p-4">
-                
-                {/* Top Badges */}
-                <div className="flex justify-between items-start w-full">
-                  <div className="flex h-7 w-7 items-center justify-center rounded-full bg-amber-500 text-[11px] font-bold text-white shadow-lg">
-                    {index + 1}
-                  </div>
-
-                  {isOffer && item.discount && (
-                    <div className="inline-flex items-center gap-1 rounded-full bg-emerald-500/90 px-2.5 py-1 text-[10px] font-bold text-white shadow-md">
-                      <FiPercent className="h-2.5 w-2.5" />
-                      {item.discount} OFF
-                    </div>
-                  )}
-                </div>
-
-                {/* Bottom Info */}
-                <div>
-                  <h3 className="text-base font-semibold leading-snug text-white drop-shadow-md">
-                    {item.name || item.title}
-                  </h3>
-
-                  <p className="mt-1.5 inline-flex items-center gap-1 text-xs text-stone-300 drop-shadow-md">
-                    <FiMapPin className="h-3 w-3 text-amber-500" />
-                    {item.location}
-                  </p>
-
-                  <div className="mt-2 flex items-center justify-between">
-                    <div className="flex items-baseline gap-1.5">
-                      <span className="text-lg font-bold text-white drop-shadow-md">
-                        {item.price}
-                      </span>
-                      <span className="text-[10px] text-stone-400">/ night</span>
-                    </div>
-
-                    <div className="inline-flex items-center gap-1 rounded-full bg-black/50 px-2 py-0.5 text-xs font-semibold text-amber-300 backdrop-blur-sm">
-                      <FiStar className="h-3 w-3" />
-                      {item.rating}
-                    </div>
-                  </div>
-                </div>
-
-              </div>
-            </div>
-          );
-        })}
-
-        </div>
+        {items.map((item, index) => (
+          <TopPickCard
+            key={item.id}
+            item={item}
+            rank={index + 1}
+            type={type}
+            navigate={navigate}
+          />
+        ))}
       </div>
 
-      {/* EXPLORE MORE BUTTON - Pushed to bottom */}
-      <div className="relative z-20 flex shrink-0 justify-center mt-auto">
+      {/* EXPLORE MORE BUTTON */}
+
+      <div
+        className="
+          relative
+          z-20
+          mt-8
+          flex
+          shrink-0
+          justify-center
+        "
+      >
         {exploreLink && (
           <button
             type="button"
             onClick={() => navigate(exploreLink)}
-            className="inline-flex items-center gap-3 rounded-full bg-gradient-to-r from-amber-500 to-amber-600 px-8 py-3.5 text-base font-bold tracking-wide text-white shadow-lg transition-all hover:-translate-y-1 hover:shadow-xl hover:shadow-amber-500/30"
+            className="
+              inline-flex
+              items-center
+              gap-3
+              rounded-full
+              bg-linear-to-r
+              from-amber-500
+              to-amber-600
+              px-8
+              py-3.5
+              text-base
+              font-bold
+              tracking-wide
+              text-white
+              shadow-lg
+              transition-all
+              hover:-translate-y-1
+              hover:shadow-xl
+              hover:shadow-amber-500/30
+            "
           >
             {exploreLabel}
             <FiArrowUpRight className="h-5 w-5" />
           </button>
         )}
       </div>
-
     </div>
   );
 };

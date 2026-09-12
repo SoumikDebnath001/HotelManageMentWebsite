@@ -73,12 +73,13 @@ const getAmenities = async (req, res) => {
 
     let match = { isDeleted: false };
 
-    if (req.userType != "Admin") {
+    // Hotel admins / managers / users only see active amenities; ?activeOnly=true forces it
+    if (req.userType != "Admin" || req.query.activeOnly === "true") {
       match.isActive = true;
     }
 
     if (req.query.search) {
-      match.amenityName = { $regex: req.query.search, $options: "i" };
+      match.amenityName = { $regex: String(req.query.search).replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), $options: "i" };
     }
 
     const amenities = await Amenity.aggregate([

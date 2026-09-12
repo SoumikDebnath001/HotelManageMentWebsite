@@ -76,3 +76,33 @@ export const deleteHotel = async (data) => {
 export const getAllCountryStates = async () => {
   return handleApiRequest(() => axiosInstance("SuperAdmin").get(`superadmin/getAllCountryStates`));
 };
+
+// ============================================================================
+// AMENITIES API
+// ============================================================================
+export const fetchAmenities = async (params = {}) => {
+  return handleApiRequest(() => axiosInstance("SuperAdmin").get("superadmin/getAmenities", { params: { limit: 200, ...params } }));
+};
+
+export const createAmenity = async (data) => {
+  return handleApiRequest(() => axiosInstance("SuperAdmin").post("superadmin/createAmenity", data));
+};
+
+export const updateAmenity = async (data) => {
+  return handleApiRequest(() => axiosInstance("SuperAdmin").post("superadmin/updateAmenity", data));
+};
+
+export const deleteAmenity = async (data) => {
+  return handleApiRequest(() => axiosInstance("SuperAdmin").post("superadmin/deleteAmenity", data));
+};
+
+// ============================================================================
+// BOOKINGS & OFFERS API
+// ============================================================================
+export const getAllBookings = async (params = {}) => {
+  return handleApiRequest(() => axiosInstance("SuperAdmin").get("superadmin/getAllBookings", { params }));
+};
+
+export const getAllOffers = async (params = {}) => {
+  return handleApiRequest(() => axiosInstance("SuperAdmin").get("superadmin/getAllOffers", { params }));
+};

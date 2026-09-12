@@ -14,7 +14,19 @@ export const removeFromWishlist = async (data) => {
   return handleApiRequest(() => axiosInstance("User").post(`user/removeFromWishlist`, data));
 };
 
-//========================================================================================= Review API Calls (Mocked for now)
-export const getReviewsByHotelId = async (hotelId) => {
-  return { data: { status: true, data: [] } };
+//========================================================================================= Review API Calls
+export const getReviewsByHotelId = async (hotelId, page = 1, limit = 10) => {
+  return handleApiRequest(() => axiosInstance("Public").get(`public/getHotelReviews`, { params: { hotelId, page, limit } }));
+};
+
+export const addReview = async (data) => {
+  return handleApiRequest(() => axiosInstance("User").post(`user/addReview`, data));
+};
+
+export const updateReview = async (data) => {
+  return handleApiRequest(() => axiosInstance("User").post(`user/updateReview`, data));
+};
+
+export const deleteReview = async (data) => {
+  return handleApiRequest(() => axiosInstance("User").post(`user/deleteReview`, data));
 };

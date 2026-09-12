@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   FiArrowUpRight,
@@ -52,19 +52,29 @@ const HomePage = () => {
   const navigate = useNavigate();
 
   const ctaRef = useRef(null);
-
-  const [ctaProgress, setCtaProgress] = useState(0);
+  const ctaBackgroundRef = useRef(null);
+  const ctaContentRef = useRef(null);
 
   /* =======================================================
      CTA PARALLAX
+
+     Written straight to the DOM through refs.
+     Using state here re-rendered the whole
+     home page (every section) on each scroll.
   ======================================================= */
 
   useEffect(() => {
     let ticking = false;
+    let lastProgress = -1;
 
     const updateParallax = () => {
-      if (!ctaRef.current) {
-        ticking = false;
+      ticking = false;
+
+      if (
+        !ctaRef.current ||
+        !ctaBackgroundRef.current ||
+        !ctaContentRef.current
+      ) {
         return;
       }
 
@@ -74,18 +84,37 @@ const HomePage = () => {
       const viewportHeight =
         window.innerHeight;
 
-      const progress =
-        (viewportHeight - rect.top) /
-        (viewportHeight + rect.height);
-
-      setCtaProgress(
-        Math.min(
-          Math.max(progress, 0),
-          1
-        )
+      const progress = Math.min(
+        Math.max(
+          (viewportHeight - rect.top) /
+            (viewportHeight + rect.height),
+          0
+        ),
+        1
       );
 
-      ticking = false;
+      /*
+        Skip the DOM write when nothing
+        changed (section fully off screen).
+      */
+
+      if (progress === lastProgress) {
+        return;
+      }
+
+      lastProgress = progress;
+
+      const backgroundY =
+        (progress - 0.5) * -100;
+
+      const contentY =
+        (progress - 0.5) * 45;
+
+      ctaBackgroundRef.current.style.transform =
+        `translate3d(0, ${backgroundY}px, 0) scale(1.08)`;
+
+      ctaContentRef.current.style.transform =
+        `translate3d(0, ${contentY}px, 0)`;
     };
 
     const handleScroll = () => {
@@ -125,16 +154,6 @@ const HomePage = () => {
       );
     };
   }, []);
-
-  /* =======================================================
-     PARALLAX VALUES
-  ======================================================= */
-
-  const backgroundY =
-    (ctaProgress - 0.5) * -100;
-
-  const contentY =
-    (ctaProgress - 0.5) * 45;
 
   return (
     <div
@@ -485,8 +504,11 @@ const HomePage = () => {
           >
 
             <img
+              ref={ctaBackgroundRef}
               src="https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=2200&q=90"
               alt=""
+              loading="lazy"
+              decoding="async"
               className="
                 absolute
                 inset-0
@@ -497,14 +519,8 @@ const HomePage = () => {
                 will-change-transform
               "
               style={{
-                transform: `
-                  translate3d(
-                    0,
-                    ${backgroundY}px,
-                    0
-                  )
-                  scale(1.08)
-                `,
+                transform:
+                  "translate3d(0, 50px, 0) scale(1.08)",
               }}
             />
 
@@ -574,19 +590,15 @@ const HomePage = () => {
           >
 
             <div
+              ref={ctaContentRef}
               className="
                 w-full
                 max-w-4xl
                 will-change-transform
               "
               style={{
-                transform: `
-                  translate3d(
-                    0,
-                    ${contentY}px,
-                    0
-                  )
-                `,
+                transform:
+                  "translate3d(0, -22.5px, 0)",
               }}
             >
 

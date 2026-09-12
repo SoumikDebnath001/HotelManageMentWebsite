@@ -18,7 +18,7 @@ import { logout } from "../../../Store/Slices/AuthSlice";
 import UnifiedLoginModal from "../../../Features/Auth/Components/UnifiedLoginModal";
 
 import SiteIcon from "../../../assets/Site_Icon.png";
-import { axiosInstance } from "../../../Services/axios";
+import { searchPublicHotels } from "../../../Services/booking.service";
 
 /* =========================================================
    NAVIGATION LINKS
@@ -70,6 +70,7 @@ const NavLink = ({
 
 const ExpandingSearchField = ({
   onSearch,
+  onSelectHotel,
   className = "",
 }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -77,6 +78,7 @@ const ExpandingSearchField = ({
   const [suggestions, setSuggestions] = useState([]);
   const [loading, setLoading] = useState(false);
   const inputRef = useRef(null);
+  const containerRef = useRef(null);
 
   useEffect(() => {
     if (isOpen && inputRef.current) {
@@ -87,30 +89,70 @@ const ExpandingSearchField = ({
     }
   }, [isOpen]);
 
+  /*
+    Close the search when clicking outside of it.
+  */
+
   useEffect(() => {
-    const fetchSuggestions = async () => {
-      if (query.trim().length >= 3) {
-        setLoading(true);
-        try {
-          const res = await axiosInstance("User").get(`/v1/public/search?search=${encodeURIComponent(query.trim())}`);
-          if (res.data?.status && res.data?.data?.hotels) {
-            setSuggestions(res.data.data.hotels);
-          }
-        } catch (error) {
-          console.error("Search error:", error);
-        } finally {
-          setLoading(false);
-        }
-      } else {
-        setSuggestions([]);
+    if (!isOpen) return;
+
+    const handleClickOutside = (event) => {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(event.target)
+      ) {
+        setIsOpen(false);
       }
     };
 
-    const timer = setTimeout(() => {
-      fetchSuggestions();
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isOpen]);
+
+  /*
+    Debounced suggestions from the public search API.
+    A request id guards against out-of-order responses.
+  */
+
+  const handleQueryChange = (value) => {
+    setQuery(value);
+
+    if (value.trim().length < 2) {
+      setSuggestions([]);
+      setLoading(false);
+    } else {
+      setLoading(true);
+    }
+  };
+
+  useEffect(() => {
+    const term = query.trim();
+
+    if (term.length < 2) return;
+
+    let cancelled = false;
+
+    const timer = setTimeout(async () => {
+      const { data, error } = await searchPublicHotels(term);
+
+      if (cancelled) return;
+
+      if (!error && data?.status && Array.isArray(data?.data?.hotels)) {
+        setSuggestions(data.data.hotels.slice(0, 6));
+      } else {
+        setSuggestions([]);
+      }
+
+      setLoading(false);
     }, 300);
 
-    return () => clearTimeout(timer);
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
   }, [query]);
 
   const handleSubmit = (e) => {
@@ -123,12 +165,20 @@ const ExpandingSearchField = ({
   };
 
   const handleSuggestionClick = (hotel) => {
-    onSearch(hotel.hotelName);
+    if (onSelectHotel) {
+      onSelectHotel(hotel);
+    } else {
+      onSearch(hotel.hotelName);
+    }
+
     setIsOpen(false);
   };
 
   return (
-    <div className={`relative flex items-center ${className}`}>
+    <div
+      ref={containerRef}
+      className={`relative flex items-center ${className}`}
+    >
       <motion.form
         initial={false}
         animate={{
@@ -147,8 +197,8 @@ const ExpandingSearchField = ({
           ref={inputRef}
           type="search"
           value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search rooms..."
+          onChange={(e) => handleQueryChange(e.target.value)}
+          placeholder="Search hotels, cities..."
           className="
             w-[220px]
             rounded-full
@@ -173,7 +223,7 @@ const ExpandingSearchField = ({
       </motion.form>
 
       <AnimatePresence>
-        {isOpen && query.trim().length >= 3 && (
+        {isOpen && query.trim().length >= 2 && (
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -643,6 +693,12 @@ const Navbar = () => {
     setMenuOpen(false);
   };
 
+  const handleSelectHotel = (hotel) => {
+    navigate(`/rooms/${hotel._id}`);
+
+    setMenuOpen(false);
+  };
+
   /* =======================================================
      LOGIN MODAL
   ======================================================= */
@@ -756,6 +812,7 @@ const Navbar = () => {
 
             <ExpandingSearchField
               onSearch={handleSearch}
+              onSelectHotel={handleSelectHotel}
               className="ml-2"
             />
           </nav>

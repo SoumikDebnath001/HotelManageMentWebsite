@@ -1,13 +1,14 @@
 import React from "react";
-import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
-import { FiHome, FiUsers, FiGrid, FiLogOut, FiLayers, FiUser } from "react-icons/fi";
-import { useDispatch } from "react-redux";
+import { Outlet, Link, Navigate, useLocation, useNavigate } from "react-router-dom";
+import { FiHome, FiUsers, FiGrid, FiLogOut, FiLayers, FiUser, FiCheckSquare, FiCalendar, FiTag, FiBarChart2 } from "react-icons/fi";
+import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../Store/Slices/AuthSlice";
 
 const SuperAdminLayout = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { isAuthenticated, userType } = useSelector((state) => state.auth);
 
   const handleLogout = () => {
     dispatch(logout());
@@ -20,7 +21,16 @@ const SuperAdminLayout = () => {
     { name: "Admins", path: "/admin/superadmin/admins", icon: FiUsers },
     { name: "Hotels", path: "/admin/superadmin/hotels", icon: FiGrid },
     { name: "Room Types", path: "/admin/superadmin/room-types", icon: FiLayers },
+    { name: "Amenities", path: "/admin/superadmin/amenities", icon: FiCheckSquare },
+    { name: "Bookings", path: "/admin/superadmin/bookings", icon: FiCalendar },
+    { name: "Offers", path: "/admin/superadmin/offers", icon: FiTag },
+    { name: "Reports", path: "/admin/superadmin/reports", icon: FiBarChart2 },
   ];
+
+  // Panel is only for the SuperAdmin role; everyone else goes to that role's login
+  if (!isAuthenticated || userType !== "SuperAdmin") {
+    return <Navigate to="/admin/superadmin/login" replace />;
+  }
 
   return (
     <div className="flex h-screen bg-stone-950 text-white selection:bg-amber-500 selection:text-white overflow-hidden">

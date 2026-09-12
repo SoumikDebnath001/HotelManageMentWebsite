@@ -3,54 +3,10 @@ const Hotel = require("../../../Models/hotel");
 const Rooms = require("../../../Models/roomsMoodel");
 const HotelRoomBooking = require("../../../Models/hotelBookingModel");
 const RoomSelection = require("../../../Models/roomSelectionModel");
-const Offer = require("../../../Models/offerModel");
+const { applyOffer } = require("../../../service/offerService");
 const Payment = require("../../../Models/paymentModel");
 const { Validator } = require("node-input-validator");
 const crypto = require("crypto");
-
-// Apply Offer on booking amount - returns { offer, discountAmount } or { error }
-const applyOffer = async (offerCode, hotelId, totalAmount) => {
-  const now = new Date();
-
-  const offers = await Offer.aggregate([
-    {
-      $match: {
-        offerCode: offerCode,
-        hotelId: new mongoose.Types.ObjectId(String(hotelId)),
-        validFrom: { $lte: now },
-        validTill: { $gte: now },
-        isActive: true,
-        isDeleted: false,
-      },
-    },
-  ]);
-
-  if (offers.length == 0) {
-    return { error: "Offer not found or expired for this hotel" };
-  }
-
-  const offer = offers[0];
-
-  if (offer.minBookingAmount && totalAmount < offer.minBookingAmount) {
-    return { error: `Minimum booking amount for this offer is ${offer.minBookingAmount}` };
-  }
-
-  let discountAmount = 0;
-  if (offer.discountType == "percentage") {
-    discountAmount = (totalAmount * offer.discountValue) / 100;
-    if (offer.maxDiscountAmount && discountAmount > offer.maxDiscountAmount) {
-      discountAmount = offer.maxDiscountAmount;
-    }
-  } else {
-    discountAmount = offer.discountValue;
-  }
-
-  if (discountAmount > totalAmount) {
-    discountAmount = totalAmount;
-  }
-
-  return { offer: offer, discountAmount: discountAmount };
-};
 
 // Book Room (by User) - availability check by dates, then booking creation
 const bookRoom = async (req, res) => {
@@ -274,7 +230,7 @@ const bookRoom = async (req, res) => {
 
     return res.status(201).json({
       status: true,
-      message: "Room booked successfully, please complete the payment",
+      message: "Room booked successfully, payment confirmed",
       data: bookingInsert,
     });
   } catch (error) {

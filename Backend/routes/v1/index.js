@@ -15,6 +15,8 @@ const userController = require('../../controllers/user/auth/userController');
 const adminController = require('../../controllers/admin/auth/adminController');
 const otpController = require('../../controllers/shared/otp/otpController');
 const userHotelController = require('../../controllers/user/hotelController/userHotelController');
+const reviewController = require('../../controllers/user/ratingReviewLiked/reviewController');
+const userOfferController = require('../../controllers/user/hotelController/offerController');
 ////////////////////////////////////////////////////////////////////////////////////=== Public Routes
 
 //=============== Superadmin Routes
@@ -39,11 +41,14 @@ router.post('/user/verifyOtp', otpController.verifyOtp);
 
 //================== Public Hotel Routes
 router.get('/public/getAllHotels', userHotelController.getAllHotels);
+router.get('/public/getHotelFilterOptions', userHotelController.getHotelFilterOptions);
 router.get('/public/getHotelById', userHotelController.getHotelById);
 router.get('/public/getRoomsByHotelId', userHotelController.getRoomsByHotelId);
 router.get('/public/roomAvailability', userHotelController.roomAvailability);
 router.get('/public/search', userHotelController.search);
 router.get('/public/getRoomBookedDates', userHotelController.getRoomBookedDates);
+router.get('/public/getHotelReviews', reviewController.getHotelReviews);
+router.get('/public/getActiveOffers', userOfferController.getActiveOffers);
 
 
 ///////////////////////////////////////////////////////////////////////////////////==== Protected Routes

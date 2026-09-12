@@ -12,6 +12,8 @@ const paymentController = require('../../controllers/shared/HotelControllers/pay
 const offerController = require('../../controllers/employee/hotelController/offerController');
 const ImageUpload = require('../../controllers/shared/Uploads/imageUpload');
 
+const amenityController = require('../../controllers/shared/HotelControllers/amenityController');
+const reviewController = require('../../controllers/user/ratingReviewLiked/reviewController');
 const { requireManager } = require('../../service/middleware');
 
 router.use(requireManager);
@@ -19,6 +21,8 @@ router.use(requireManager);
 //=============== Hotel Routes
 router.post('/registerHotel', hotelController.registerHotel);
 router.get('/getMyHotels', hotelController.getMyHotels);
+router.get('/getAmenities', amenityController.getAmenities);
+router.get('/getHotelReviews', reviewController.getHotelReviews);
 
 //=============== Rooms Routes
 router.post('/createHotelRoom', roomController.createHotelRoom);

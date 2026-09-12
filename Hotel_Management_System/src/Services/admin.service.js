@@ -52,3 +52,7 @@ export const uploadHotelImage = async (file) => {
     })
   );
 };
+
+export const fetchAmenities = async () => {
+  return handleApiRequest(() => axiosInstance("Admin").get("admin/getAmenities", { params: { activeOnly: true, limit: 200 } }));
+};

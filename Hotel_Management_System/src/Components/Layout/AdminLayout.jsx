@@ -1,13 +1,14 @@
 import React from "react";
-import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
+import { Outlet, Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { FiHome, FiUsers, FiGrid, FiLogOut, FiUser, FiLayers } from "react-icons/fi";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../Store/Slices/AuthSlice";
 
 const AdminLayout = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { isAuthenticated, userType } = useSelector((state) => state.auth);
 
   const handleLogout = () => {
     dispatch(logout());
@@ -20,6 +21,11 @@ const AdminLayout = () => {
     { name: "Hotels", path: "/admin/panel/hotels", icon: FiGrid },
     { name: "Profile", path: "/admin/panel/profile", icon: FiUser },
   ];
+
+  // Panel is only for the Admin role; everyone else goes to that role's login
+  if (!isAuthenticated || userType !== "Admin") {
+    return <Navigate to="/admin/auth" replace />;
+  }
 
   return (
     <div className="flex h-screen bg-stone-950 text-white selection:bg-amber-500 selection:text-white overflow-hidden">

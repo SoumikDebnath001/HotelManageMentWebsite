@@ -105,7 +105,7 @@ const SuperAdminDashboard = () => {
             <FiDollarSign className="h-5 w-5 text-emerald-400" />
           </div>
           <p className="mt-3 font-serif text-3xl font-bold text-emerald-400">
-            ${adminStats.totalRevenue.toLocaleString()}
+            ₹{Number(adminStats.totalRevenue || 0).toLocaleString("en-IN")}
           </p>
           <p className="mt-1 text-[11px] text-stone-400">Paid Transactions</p>
         </GlassCard>

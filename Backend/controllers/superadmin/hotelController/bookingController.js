@@ -47,6 +47,11 @@ const getAllBookings = async (req, res) => {
       match.userId = new mongoose.Types.ObjectId(String(req.query.userId));
     }
 
+    if (req.query.search) {
+      const regex = { $regex: String(req.query.search).replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), $options: "i" };
+      match.$or = [{ userName: regex }, { hotelName: regex }, { roomNumber: regex }];
+    }
+
     const bookings = await HotelRoomBooking.aggregate([
       {
         $match: match,

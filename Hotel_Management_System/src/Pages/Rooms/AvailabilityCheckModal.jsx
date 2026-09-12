@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { getRoomBookedDates } from "../../Services/booking.service";
-import { FiX, FiCalendar, FiArrowRight, FiCheckCircle } from "react-icons/fi";
+import { FiX, FiUsers } from "react-icons/fi";
+import { formatMoney, nightsBetween } from "../../Utils/bookingHelpers";
 import toast from "react-hot-toast";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -8,6 +9,10 @@ import { useNavigate } from "react-router-dom";
 const AvailabilityCheckModal = ({ room, hotel, onClose }) => {
   const [checkIn, setCheckIn] = useState("");
   const [checkOut, setCheckOut] = useState("");
+  const [adults, setAdults] = useState(1);
+  const [children, setChildren] = useState(0);
+  const maxAdults = room.maxAdults || 2;
+  const maxChildren = room.maxChildren || 0;
   const [bookedDates, setBookedDates] = useState([]);
   const [loadingDates, setLoadingDates] = useState(true);
   
@@ -52,13 +57,21 @@ const AvailabilityCheckModal = ({ room, hotel, onClose }) => {
       toast.error("Please select valid dates");
       return;
     }
+    if (adults < 1 || adults > maxAdults) {
+      toast.error(`This room allows 1 to ${maxAdults} adults`);
+      return;
+    }
+    if (children < 0 || children > maxChildren) {
+      toast.error(maxChildren ? `This room allows up to ${maxChildren} children` : "This room does not allow children");
+      return;
+    }
     if (!isAuthenticated) {
       toast.error("Please sign in to complete your booking.");
       navigate("/user/auth/login");
       return;
     }
     toast.success("Proceeding to booking...");
-    navigate('/user/checkout', { state: { room, hotel, checkIn, checkOut, adults: 1 } })
+    navigate('/user/checkout', { state: { room, hotel, checkIn, checkOut, adults, children } })
   };
 
   // Calendar rendering logic
@@ -225,17 +238,38 @@ const AvailabilityCheckModal = ({ room, hotel, onClose }) => {
               </div>
             </div>
 
+            {/* Guests */}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="rounded-xl border border-white/5 bg-black/20 p-3">
+                <p className="text-[10px] uppercase text-stone-500 font-bold mb-1 flex items-center gap-1"><FiUsers /> Adults <span className="normal-case font-normal">(max {maxAdults})</span></p>
+                <div className="flex items-center gap-2">
+                  <button type="button" onClick={() => setAdults((a) => Math.max(1, a - 1))} className="h-8 w-8 rounded-lg bg-white/10 text-white hover:bg-white/20">−</button>
+                  <span className="w-8 text-center text-sm font-semibold text-white">{adults}</span>
+                  <button type="button" onClick={() => setAdults((a) => Math.min(maxAdults, a + 1))} className="h-8 w-8 rounded-lg bg-white/10 text-white hover:bg-white/20">+</button>
+                </div>
+              </div>
+              <div className="rounded-xl border border-white/5 bg-black/20 p-3">
+                <p className="text-[10px] uppercase text-stone-500 font-bold mb-1 flex items-center gap-1"><FiUsers /> Children <span className="normal-case font-normal">(max {maxChildren})</span></p>
+                <div className="flex items-center gap-2">
+                  <button type="button" disabled={maxChildren === 0} onClick={() => setChildren((c) => Math.max(0, c - 1))} className="h-8 w-8 rounded-lg bg-white/10 text-white hover:bg-white/20 disabled:opacity-40">−</button>
+                  <span className="w-8 text-center text-sm font-semibold text-white">{children}</span>
+                  <button type="button" disabled={maxChildren === 0} onClick={() => setChildren((c) => Math.min(maxChildren, c + 1))} className="h-8 w-8 rounded-lg bg-white/10 text-white hover:bg-white/20 disabled:opacity-40">+</button>
+                </div>
+              </div>
+            </div>
+
             {/* Pricing Preview */}
             {checkIn && checkOut && (
               <div className="rounded-xl bg-white/5 p-4 border border-white/10 flex justify-between items-center">
                 <div>
                   <p className="text-stone-400 text-xs uppercase font-bold tracking-wider mb-1">Total Price</p>
                   <p className="text-white text-sm">
-                    ${room.pricePerNight} x {Math.ceil((new Date(checkOut) - new Date(checkIn)) / (1000 * 60 * 60 * 24))} Nights
+                    {formatMoney(room.pricePerNight)} × {nightsBetween(checkIn, checkOut)} night{nightsBetween(checkIn, checkOut) === 1 ? "" : "s"}
                   </p>
+                  <p className="text-[11px] text-stone-500 mt-0.5">Offers can be applied at checkout</p>
                 </div>
                 <p className="text-2xl font-bold text-emerald-400">
-                  ${room.pricePerNight * Math.ceil((new Date(checkOut) - new Date(checkIn)) / (1000 * 60 * 60 * 24))}
+                  {formatMoney(room.pricePerNight * nightsBetween(checkIn, checkOut))}
                 </p>
               </div>
             )}
@@ -245,7 +279,7 @@ const AvailabilityCheckModal = ({ room, hotel, onClose }) => {
               disabled={!checkIn || !checkOut}
               className="w-full rounded-xl bg-emerald-600 py-3 text-sm font-bold text-white hover:bg-emerald-500 transition-colors disabled:opacity-50 disabled:bg-stone-800 disabled:text-stone-500"
             >
-              Book Now
+              Continue to checkout
             </button>
 
           </div>

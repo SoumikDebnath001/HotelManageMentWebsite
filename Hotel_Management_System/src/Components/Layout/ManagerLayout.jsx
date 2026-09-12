@@ -1,13 +1,14 @@
 import React from "react";
-import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
-import { FiHome, FiGrid, FiLogOut, FiUser } from "react-icons/fi";
-import { useDispatch } from "react-redux";
+import { Outlet, Link, Navigate, useLocation, useNavigate } from "react-router-dom";
+import { FiHome, FiGrid, FiLogOut, FiUser, FiCalendar, FiTag } from "react-icons/fi";
+import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../Store/Slices/AuthSlice";
 
 const ManagerLayout = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { isAuthenticated, userType } = useSelector((state) => state.auth);
 
   const handleLogout = () => {
     dispatch(logout());
@@ -17,8 +18,15 @@ const ManagerLayout = () => {
   const navItems = [
     { name: "Dashboard", path: "/employee/panel/dashboard", icon: FiHome },
     { name: "Rooms", path: "/employee/panel/rooms", icon: FiGrid },
+    { name: "Bookings", path: "/employee/panel/bookings", icon: FiCalendar },
+    { name: "Offers", path: "/employee/panel/offers", icon: FiTag },
     { name: "Profile", path: "/employee/panel/profile", icon: FiUser },
   ];
+
+  // Panel is only for the Employee role; everyone else goes to that role's login
+  if (!isAuthenticated || userType !== "Employee") {
+    return <Navigate to="/employee/auth/login" replace />;
+  }
 
   return (
     <div className="flex h-screen bg-stone-950 text-white selection:bg-amber-500 selection:text-white overflow-hidden">

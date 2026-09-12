@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { FiPlus, FiX, FiEdit2, FiTrash2 } from "react-icons/fi";
 import toast from "react-hot-toast";
-import { fetchHotelRooms, fetchMyHotel, createRoom, updateRoom, deleteRoom } from "../../Services/manager.service";
+import { fetchHotelRooms, fetchMyHotel, createRoom, updateRoom, deleteRoom, fetchAmenities } from "../../Services/manager.service";
+import AmenityPicker from "../../Components/Common/AmenityPicker";
 
 const ROOM_TYPES = ["single", "double", "triple", "queen", "king", "suite", "deluxe"];
 const AVAILABILITY_STATUSES = ["available", "booked", "maintenance"];
@@ -16,6 +17,7 @@ const emptyForm = {
   maxChildren: "",
   bedCount: "",
   availabilityStatus: "available",
+  amenities: [],
 };
 
 const ManagerRooms = () => {
@@ -74,6 +76,7 @@ const ManagerRooms = () => {
       maxChildren: room.maxChildren || "",
       bedCount: room.bedCount || "",
       availabilityStatus: room.availabilityStatus || "available",
+      amenities: room.amenities || [],
     });
     setIsCreateOpen(true);
   };
@@ -175,6 +178,7 @@ const ManagerRooms = () => {
                   <th className="py-4 px-6">Type</th>
                   <th className="py-4 px-6">Floor</th>
                   <th className="py-4 px-6">Price/Night</th>
+                  <th className="py-4 px-6">Amenities</th>
                   <th className="py-4 px-6">Status</th>
                   <th className="py-4 px-6 text-right">Actions</th>
                 </tr>
@@ -186,6 +190,18 @@ const ManagerRooms = () => {
                     <td className="py-4 px-6 capitalize">{room.roomType}</td>
                     <td className="py-4 px-6">{room.floor || "—"}</td>
                     <td className="py-4 px-6 text-emerald-400 font-medium">₹{room.pricePerNight?.toLocaleString()}</td>
+                    <td className="py-4 px-6">
+                      {room.amenities && room.amenities.length > 0 ? (
+                        <div className="flex flex-wrap gap-1 max-w-xs">
+                          {room.amenities.slice(0, 3).map((amenity) => (
+                            <span key={amenity} className="rounded-md border border-white/10 bg-white/5 px-2 py-0.5 text-[10px] text-stone-300">{amenity}</span>
+                          ))}
+                          {room.amenities.length > 3 && <span className="text-[10px] text-stone-500">+{room.amenities.length - 3}</span>}
+                        </div>
+                      ) : (
+                        <span className="text-xs text-stone-500 italic">None</span>
+                      )}
+                    </td>
                     <td className="py-4 px-6">
                       <span className={`px-2 py-1 rounded-full text-xs font-semibold ${statusColors[room.availabilityStatus] || ""}`}>
                         {room.availabilityStatus}
@@ -347,6 +363,16 @@ const ManagerRooms = () => {
                     <option key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</option>
                   ))}
                 </select>
+              </div>
+
+              <div className="border-t border-white/10 pt-4">
+                <AmenityPicker
+                  value={formData.amenities}
+                  onChange={(amenities) => setFormData({ ...formData, amenities })}
+                  fetchAmenities={fetchAmenities}
+                  label="Room Amenities"
+                  hint="In-room facilities from the master list. Guests can search by these."
+                />
               </div>
 
               <div>

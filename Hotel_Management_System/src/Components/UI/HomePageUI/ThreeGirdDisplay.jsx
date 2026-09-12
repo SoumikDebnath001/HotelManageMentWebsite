@@ -429,13 +429,15 @@ const ThreeGirdDisplay = () => {
 
   useEffect(() => {
     let ticking = false;
+    let lastProgress = null;
 
     const updateSection =
       () => {
+        ticking = false;
+
         if (
           !sectionRef.current
         ) {
-          ticking = false;
           return;
         }
 
@@ -457,11 +459,26 @@ const ThreeGirdDisplay = () => {
             1
           );
 
+        /*
+          Off screen the value is pinned
+          at 0 or 1 — skip the state update
+          so scrolling elsewhere on the page
+          never re-renders the panels.
+        */
+
+        if (
+          nextProgress ===
+          lastProgress
+        ) {
+          return;
+        }
+
+        lastProgress =
+          nextProgress;
+
         setProgress(
           nextProgress
         );
-
-        ticking = false;
       };
 
     const handleScroll =

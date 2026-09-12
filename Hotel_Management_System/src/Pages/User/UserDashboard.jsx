@@ -16,7 +16,8 @@ const UserDashboard = () => {
   const dispatch = useDispatch();
   const { isAuthenticated, userType } = useSelector((state) => state.auth);
 
-  const [activeSection, setActiveSection] = useState("info"); // 'info' or 'bookings'
+  // Checkout sends { section: "bookings" } so the guest lands on their reservations
+  const [activeSection, setActiveSection] = useState(location.state?.section || "info"); // 'info' | 'bookings' | 'liked'
 
   useEffect(() => {
     if (!isAuthenticated) {

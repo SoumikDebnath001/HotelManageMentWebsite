@@ -1,7 +1,8 @@
 import React, { useEffect, useState, useRef } from "react";
 import { FiPlus, FiX, FiEdit2, FiUpload, FiTrash2, FiImage } from "react-icons/fi";
 import toast from "react-hot-toast";
-import { fetchMyHotels, createHotel, updateHotel, uploadHotelImage } from "../../Services/admin.service";
+import { fetchMyHotels, createHotel, updateHotel, uploadHotelImage, fetchAmenities } from "../../Services/admin.service";
+import AmenityPicker from "../../Components/Common/AmenityPicker";
 
 const AdminHotelsList = () => {
   const [hotels, setHotels] = useState([]);
@@ -20,6 +21,7 @@ const AdminHotelsList = () => {
     address: "",
     starRating: "",
   });
+  const [editAmenities, setEditAmenities] = useState([]);
   const [editCoverImage, setEditCoverImage] = useState(null);     // string URL or null
   const [editGalleryImages, setEditGalleryImages] = useState([]); // string URL[]
   const [editUploading, setEditUploading] = useState(false);
@@ -36,6 +38,7 @@ const AdminHotelsList = () => {
     address: "",
     starRating: "",
   });
+  const [createAmenities, setCreateAmenities] = useState([]);
   const [createCoverImage, setCreateCoverImage] = useState(null);
   const [createGalleryImages, setCreateGalleryImages] = useState([]);
   const [createUploading, setCreateUploading] = useState(false);
@@ -126,6 +129,7 @@ const AdminHotelsList = () => {
       if (createCoverImage) imageArray.push(createCoverImage);
       imageArray.push(...createGalleryImages);
       if (imageArray.length > 0) payload.image = imageArray;
+      payload.amenities = createAmenities;
 
       const res = await createHotel(payload);
       if (res?.data?.status) {
@@ -134,6 +138,7 @@ const AdminHotelsList = () => {
         setFormData({ hotelName: "", description: "", email: "", mobileNumber: "", address: "", starRating: "" });
         setCreateCoverImage(null);
         setCreateGalleryImages([]);
+        setCreateAmenities([]);
         loadHotels();
       } else {
         toast.error(res?.data?.message || "Failed to create hotel");
@@ -171,6 +176,7 @@ const AdminHotelsList = () => {
       address: hotel.address || "",
       starRating: hotel.starRating ? String(hotel.starRating) : "",
     });
+    setEditAmenities(hotel.amenities || []);
     const images = hotel.image || [];
     setEditCoverImage(images.length > 0 ? images[0] : null);
     setEditGalleryImages(images.length > 1 ? images.slice(1) : []);
@@ -238,6 +244,7 @@ const AdminHotelsList = () => {
         hotelId: editHotel._id,
         ...editFormData,
         image: imageArray,
+        amenities: editAmenities,
       };
       if (payload.starRating) {
         payload.starRating = Number(payload.starRating);
@@ -406,6 +413,7 @@ const AdminHotelsList = () => {
                 <tr>
                   <th className="py-4 px-6">Name</th>
                   <th className="py-4 px-6">Code</th>
+                  <th className="py-4 px-6">Amenities</th>
                   <th className="py-4 px-6">Status</th>
                   <th className="py-4 px-6 text-right">Actions</th>
                 </tr>
@@ -419,6 +427,18 @@ const AdminHotelsList = () => {
                     </td>
                     <td className="py-4 px-6 font-mono text-amber-400/80">
                       {hotel.hotelCode || <span className="text-stone-500 italic">Pending...</span>}
+                    </td>
+                    <td className="py-4 px-6">
+                      {hotel.amenities && hotel.amenities.length > 0 ? (
+                        <div className="flex flex-wrap gap-1 max-w-xs">
+                          {hotel.amenities.slice(0, 3).map((amenity) => (
+                            <span key={amenity} className="rounded-md border border-white/10 bg-white/5 px-2 py-0.5 text-[10px] text-stone-300">{amenity}</span>
+                          ))}
+                          {hotel.amenities.length > 3 && <span className="text-[10px] text-stone-500">+{hotel.amenities.length - 3} more</span>}
+                        </div>
+                      ) : (
+                        <span className="text-xs text-stone-500 italic">None</span>
+                      )}
                     </td>
                     <td className="py-4 px-6">
                       <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
@@ -576,6 +596,17 @@ const AdminHotelsList = () => {
                 />
               </div>
 
+              {/* Amenities */}
+              <div className="border-t border-white/10 pt-4">
+                <AmenityPicker
+                  value={editAmenities}
+                  onChange={setEditAmenities}
+                  fetchAmenities={fetchAmenities}
+                  label="Hotel Amenities"
+                  hint="Facilities offered by the hotel. Guests can filter by these."
+                />
+              </div>
+
               {/* Divider */}
               <div className="border-t border-white/10 pt-4">
                 <h3 className="text-sm font-bold text-white mb-1">Hotel Images</h3>
@@ -629,7 +660,7 @@ const AdminHotelsList = () => {
             <div className="p-6 border-b border-white/10 flex justify-between items-center shrink-0">
               <h2 className="text-xl font-serif font-bold text-white">Create New Hotel</h2>
               <button 
-                onClick={() => { setIsModalOpen(false); setCreateCoverImage(null); setCreateGalleryImages([]); }}
+                onClick={() => { setIsModalOpen(false); setCreateCoverImage(null); setCreateGalleryImages([]); setCreateAmenities([]); }}
                 className="text-stone-400 hover:text-white transition-colors"
               >
                 <FiX className="h-5 w-5" />
@@ -715,6 +746,17 @@ const AdminHotelsList = () => {
                 />
               </div>
 
+              {/* Amenities */}
+              <div className="border-t border-white/10 pt-4">
+                <AmenityPicker
+                  value={createAmenities}
+                  onChange={setCreateAmenities}
+                  fetchAmenities={fetchAmenities}
+                  label="Hotel Amenities"
+                  hint="Facilities offered by the hotel. You can also add these later while editing."
+                />
+              </div>
+
               {/* Divider */}
               <div className="border-t border-white/10 pt-4">
                 <h3 className="text-sm font-bold text-white mb-1">Hotel Images</h3>
@@ -742,7 +784,7 @@ const AdminHotelsList = () => {
               <div className="pt-4 flex gap-3 shrink-0">
                 <button
                   type="button"
-                  onClick={() => { setIsModalOpen(false); setCreateCoverImage(null); setCreateGalleryImages([]); }}
+                  onClick={() => { setIsModalOpen(false); setCreateCoverImage(null); setCreateGalleryImages([]); setCreateAmenities([]); }}
                   className="flex-1 px-4 py-3 rounded-xl border border-white/10 text-stone-300 font-medium hover:bg-white/5 transition-all"
                 >
                   Cancel
