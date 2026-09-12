@@ -10,6 +10,7 @@ import {
   FiBriefcase,
   FiChevronDown,
   FiGrid,
+  FiCalendar,
 } from "react-icons/fi";
 import { useSelector, useDispatch } from "react-redux";
 
@@ -876,8 +877,7 @@ const Navbar = () => {
                   fixed
                   inset-0
                   z-50
-                  bg-black/70
-                  backdrop-blur-md
+                  bg-black/20
                   md:hidden
                 "
                 initial={{
@@ -913,9 +913,11 @@ const Navbar = () => {
                   flex-col
                   border-l
                   border-white/15
-                  bg-stone-950
+                  bg-black/40
                   p-6
                   shadow-2xl
+                  backdrop-blur-2xl
+                  backdrop-saturate-150
                   md:hidden
                 "
                 initial={{
@@ -947,7 +949,7 @@ const Navbar = () => {
                     justify-between
                     border-b
                     border-white/10
-                    pb-6
+                    pb-4
                   "
                 >
                   <span
@@ -995,12 +997,12 @@ const Navbar = () => {
                 <nav
                   aria-label="Mobile primary"
                   className="
-                    mt-6
+                    mt-4
                     flex-1
                     overflow-y-auto
                   "
                 >
-                  <ul className="flex flex-col space-y-3">
+                  <ul className="flex flex-col space-y-2.5">
                     {NAV_LINKS.map(
                       (link) => (
                         <li key={link.path}>
@@ -1015,7 +1017,7 @@ const Navbar = () => {
                               w-full
                               rounded-2xl
                               px-5
-                              py-4
+                              py-3
                               text-left
                               text-[15px]
                               font-medium
@@ -1033,6 +1035,39 @@ const Navbar = () => {
                         </li>
                       )
                     )}
+
+                    {/* BOOK ROOMS — same destination as the Book Now button */}
+
+                    <li>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          goTo("/rooms")
+                        }
+                        className={`
+                          flex
+                          w-full
+                          items-center
+                          justify-between
+                          rounded-2xl
+                          px-5
+                          py-3
+                          text-left
+                          text-[15px]
+                          font-semibold
+                          transition-all
+                          ${
+                            location.pathname.startsWith("/rooms")
+                              ? "border border-amber-400/70 bg-amber-500/30 text-amber-200"
+                              : "border border-amber-500/40 bg-amber-500/15 text-amber-300 hover:bg-amber-500/25"
+                          }
+                        `}
+                      >
+                        Book Rooms
+
+                        <FiCalendar className="h-5 w-5" />
+                      </button>
+                    </li>
                   </ul>
                 </nav>
 
@@ -1045,7 +1080,7 @@ const Navbar = () => {
                     space-y-3
                     border-t
                     border-white/10
-                    pt-6
+                    pt-4
                   "
                 >
                   {isAuthenticated ? (
@@ -1118,7 +1153,7 @@ const Navbar = () => {
                           border
                           border-white/15
                           bg-white/10
-                          py-3.5
+                          py-3
                           text-sm
                           font-semibold
                           text-white
@@ -1141,7 +1176,7 @@ const Navbar = () => {
                           gap-2
                           rounded-2xl
                           bg-red-600/80
-                          py-3.5
+                          py-3
                           text-sm
                           font-semibold
                           text-white

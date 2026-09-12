@@ -184,6 +184,128 @@ const HomePage = () => {
         <HeroSlideBackground />
 
         {/* =================================================
+            STATS
+        ================================================= */}
+
+        <section
+          className="
+            relative
+            overflow-hidden
+            bg-stone-950
+            py-16
+            lg:py-20
+          "
+        >
+
+          <div
+            className="
+              pointer-events-none
+              absolute
+              inset-0
+              bg-gradient-to-b
+              from-stone-950
+              via-stone-900/50
+              to-stone-950
+            "
+          />
+
+          <div
+            className="
+              relative
+              mx-auto
+              max-w-7xl
+              px-6
+              sm:px-10
+              lg:px-16
+            "
+          >
+
+            <div
+              className="
+                grid
+                grid-cols-2
+                gap-6
+                sm:gap-8
+                lg:grid-cols-4
+                lg:gap-12
+              "
+            >
+
+              {stats.map(
+                ({
+                  number,
+                  label,
+                  icon: Icon,
+                }) => (
+
+                  <div
+                    key={label}
+                    className="
+                      group
+                      text-center
+                    "
+                  >
+
+                    <div
+                      className="
+                        mx-auto
+                        mb-4
+                        flex
+                        h-12
+                        w-12
+                        items-center
+                        justify-center
+                        rounded-full
+                        border
+                        border-amber-500/20
+                        bg-amber-500/10
+                        text-amber-400
+                        transition-all
+                        duration-300
+                        group-hover:border-amber-500/40
+                        group-hover:bg-amber-500/20
+                      "
+                    >
+                      <Icon className="h-5 w-5" />
+                    </div>
+
+                    <p
+                      className="
+                        font-serif
+                        text-3xl
+                        font-bold
+                        text-white
+                        sm:text-4xl
+                      "
+                    >
+                      {number}
+                    </p>
+
+                    <p
+                      className="
+                        mt-1.5
+                        text-xs
+                        font-medium
+                        uppercase
+                        tracking-[0.15em]
+                        text-stone-500
+                      "
+                    >
+                      {label}
+                    </p>
+
+                  </div>
+
+                )
+              )}
+
+            </div>
+
+          </div>
+
+        </section>
+
+        {/* =================================================
             BOOKING BAR
         ================================================= */}
 
@@ -332,128 +454,6 @@ const HomePage = () => {
         ================================================= */}
 
         <GridImageChnager />
-
-        {/* =================================================
-            STATS
-        ================================================= */}
-
-        <section
-          className="
-            relative
-            overflow-hidden
-            bg-stone-950
-            py-16
-            lg:py-20
-          "
-        >
-
-          <div
-            className="
-              pointer-events-none
-              absolute
-              inset-0
-              bg-gradient-to-b
-              from-stone-950
-              via-stone-900/50
-              to-stone-950
-            "
-          />
-
-          <div
-            className="
-              relative
-              mx-auto
-              max-w-7xl
-              px-6
-              sm:px-10
-              lg:px-16
-            "
-          >
-
-            <div
-              className="
-                grid
-                grid-cols-2
-                gap-6
-                sm:gap-8
-                lg:grid-cols-4
-                lg:gap-12
-              "
-            >
-
-              {stats.map(
-                ({
-                  number,
-                  label,
-                  icon: Icon,
-                }) => (
-
-                  <div
-                    key={label}
-                    className="
-                      group
-                      text-center
-                    "
-                  >
-
-                    <div
-                      className="
-                        mx-auto
-                        mb-4
-                        flex
-                        h-12
-                        w-12
-                        items-center
-                        justify-center
-                        rounded-full
-                        border
-                        border-amber-500/20
-                        bg-amber-500/10
-                        text-amber-400
-                        transition-all
-                        duration-300
-                        group-hover:border-amber-500/40
-                        group-hover:bg-amber-500/20
-                      "
-                    >
-                      <Icon className="h-5 w-5" />
-                    </div>
-
-                    <p
-                      className="
-                        font-serif
-                        text-3xl
-                        font-bold
-                        text-white
-                        sm:text-4xl
-                      "
-                    >
-                      {number}
-                    </p>
-
-                    <p
-                      className="
-                        mt-1.5
-                        text-xs
-                        font-medium
-                        uppercase
-                        tracking-[0.15em]
-                        text-stone-500
-                      "
-                    >
-                      {label}
-                    </p>
-
-                  </div>
-
-                )
-              )}
-
-            </div>
-
-          </div>
-
-        </section>
 
         {/* =================================================
             WINDOW GALLERY

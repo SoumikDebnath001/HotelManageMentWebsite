@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   FiArrowUpRight,
+  FiMail,
   FiHeart,
   FiMapPin,
   FiSun,
@@ -92,10 +93,10 @@ const GlassText = ({ children, className = "" }) => {
       className={`
         rounded-3xl
         border border-white/15
-        bg-black/20
+        bg-black/35
         backdrop-blur-xl
         backdrop-saturate-150
-        shadow-[0_20px_70px_rgba(0,0,0,0.20)]
+        shadow-[0_20px_70px_rgba(0,0,0,0.25)]
         ${className}
       `}
     >
@@ -108,7 +109,7 @@ const GlassText = ({ children, className = "" }) => {
    ANIMATED IMAGE
 ========================================================= */
 
-const AnimatedAboutImage = () => {
+const AnimatedAboutImage = ({ className = "" }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [animating, setAnimating] = useState(false);
 
@@ -133,9 +134,8 @@ const AnimatedAboutImage = () => {
 
   return (
     <div
-      className="
+      className={`
         relative
-        aspect-[4/5]
         w-full
         overflow-hidden
         rounded-2xl
@@ -143,7 +143,8 @@ const AnimatedAboutImage = () => {
         border-white/15
         bg-black/20
         shadow-2xl
-      "
+        ${className}
+      `}
     >
       {/* BLURRED BACKGROUND */}
 
@@ -341,7 +342,7 @@ const About = () => {
           HERO
       ===================================================== */}
 
-      <section className="relative min-h-screen overflow-hidden bg-transparent">
+      <section className="relative overflow-hidden bg-transparent lg:min-h-screen">
 
         <div
           className="
@@ -349,15 +350,18 @@ const About = () => {
             z-10
             mx-auto
             grid
-            min-h-screen
             w-full
             max-w-7xl
             items-center
-            gap-14
-            px-6
-            pb-20
-            pt-32
+            gap-6
+            px-4
+            pb-10
+            pt-24
+            sm:gap-14
             sm:px-10
+            sm:pb-20
+            sm:pt-32
+            lg:min-h-screen
             lg:grid-cols-12
             lg:gap-10
             lg:px-16
@@ -372,11 +376,12 @@ const About = () => {
 
           <div className="lg:col-span-7 lg:pr-12">
 
-            <GlassText className="max-w-3xl p-7 sm:p-9 lg:p-11">
+            <GlassText className="max-w-3xl p-6 sm:p-9 lg:p-11">
 
               <p
                 className="
-                  mb-6
+                  mb-4
+                  sm:mb-6
                   flex
                   items-center
                   gap-3
@@ -395,9 +400,9 @@ const About = () => {
               <h1
                 className="
                   font-serif
-                  text-5xl
+                  text-4xl
                   font-medium
-                  leading-[0.98]
+                  leading-[1.02]
                   tracking-[-0.035em]
                   text-white
                   sm:text-6xl
@@ -409,12 +414,14 @@ const About = () => {
 
               <p
                 className="
-                  mt-7
+                  mt-5
                   max-w-xl
-                  text-base
-                  leading-8
-                  text-white/80
+                  text-[15px]
+                  leading-7
+                  text-white/85
+                  sm:mt-7
                   sm:text-lg
+                  sm:leading-8
                 "
               >
                 ComfyStay is a collection of considered spaces for people who
@@ -422,45 +429,85 @@ const About = () => {
                 looked after.
               </p>
 
-              <button
-                type="button"
+              <div
                 className="
-                  group
-                  mt-9
-                  inline-flex
-                  items-center
+                  mt-7
+                  flex
+                  flex-col
                   gap-3
-                  rounded-xl
-                  bg-gradient-to-r
-                  from-amber-500
-                  to-amber-600
-                  px-6
-                  py-3.5
-                  text-sm
-                  font-semibold
-                  text-white
-                  shadow-[0_0_20px_rgba(245,158,11,0.25)]
-                  transition-all
-                  duration-300
-                  hover:-translate-y-0.5
-                  hover:from-amber-400
-                  hover:to-amber-500
-                  hover:shadow-[0_0_30px_rgba(245,158,11,0.4)]
+                  sm:mt-9
+                  sm:flex-row
                 "
               >
-                Get in touch
-
-                <FiArrowUpRight
+                <a
+                  href="mailto:hello@comfystay.com"
                   className="
-                    h-4
-                    w-4
-                    transition-transform
+                    group
+                    inline-flex
+                    items-center
+                    justify-center
+                    gap-3
+                    rounded-xl
+                    bg-gradient-to-r
+                    from-amber-500
+                    to-amber-600
+                    px-6
+                    py-3.5
+                    text-sm
+                    font-semibold
+                    text-white
+                    shadow-[0_0_20px_rgba(245,158,11,0.25)]
+                    transition-all
                     duration-300
-                    group-hover:translate-x-0.5
-                    group-hover:-translate-y-0.5
+                    hover:-translate-y-0.5
+                    hover:from-amber-400
+                    hover:to-amber-500
+                    hover:shadow-[0_0_30px_rgba(245,158,11,0.4)]
                   "
-                />
-              </button>
+                >
+                  <FiMail className="h-4 w-4" />
+                  Get in touch
+                </a>
+
+                <button
+                  type="button"
+                  onClick={() => navigate("/rooms")}
+                  className="
+                    group
+                    inline-flex
+                    items-center
+                    justify-center
+                    gap-2
+                    rounded-xl
+                    border
+                    border-white/20
+                    bg-white/5
+                    px-6
+                    py-3.5
+                    text-sm
+                    font-semibold
+                    text-white
+                    backdrop-blur-md
+                    transition-all
+                    duration-300
+                    hover:border-amber-500/50
+                    hover:bg-white/10
+                    hover:text-amber-300
+                  "
+                >
+                  Browse rooms
+                  <FiArrowUpRight
+                    className="
+                      h-4
+                      w-4
+                      transition-transform
+                      duration-300
+                      group-hover:translate-x-0.5
+                      group-hover:-translate-y-0.5
+                    "
+                  />
+                </button>
+              </div>
 
             </GlassText>
 
@@ -473,14 +520,16 @@ const About = () => {
           <div
             className="
               relative
+              order-first
               mx-auto
               w-full
               max-w-md
+              lg:order-none
               lg:col-span-5
               lg:max-w-none
             "
           >
-            <AnimatedAboutImage />
+            <AnimatedAboutImage className="aspect-[4/3] sm:aspect-[4/5]" />
           </div>
 
         </div>
@@ -494,9 +543,10 @@ const About = () => {
         className="
           relative
           bg-transparent
-          px-6
-          py-20
+          px-4
+          py-10
           sm:px-10
+          sm:py-20
           lg:px-16
           lg:py-28
         "
@@ -504,13 +554,13 @@ const About = () => {
 
         <div className="mx-auto max-w-7xl">
 
-          <div className="grid gap-10 lg:grid-cols-12 lg:gap-8">
+          <div className="grid gap-4 sm:gap-10 lg:grid-cols-12 lg:gap-8">
 
             {/* LEFT */}
 
             <div className="lg:col-span-4">
 
-              <GlassText className="p-7 sm:p-9">
+              <GlassText className="p-6 sm:p-9">
 
                 <p
                   className="
@@ -526,9 +576,10 @@ const About = () => {
 
                 <h2
                   className="
-                    mt-5
+                    mt-3
                     font-serif
-                    text-4xl
+                    text-3xl
+                    sm:mt-5
                     leading-tight
                     tracking-[-0.025em]
                     text-white
@@ -549,14 +600,14 @@ const About = () => {
 
             <div className="lg:col-span-8">
 
-              <GlassText className="p-7 sm:p-9">
+              <GlassText className="p-6 sm:p-9">
 
                 <p
                   className="
                     max-w-2xl
-                    text-lg
-                    leading-8
-                    text-white/80
+                    text-base
+                    leading-7
+                    text-white/85
                     sm:text-xl
                     sm:leading-9
                   "
@@ -577,41 +628,47 @@ const About = () => {
 
           <div
             className="
-              mt-16
+              mt-6
               grid
-              gap-6
+              grid-cols-2
+              gap-3
+              sm:mt-16
+              sm:gap-6
               md:grid-cols-3
               lg:gap-8
             "
           >
 
-            {VALUES.map(({ icon: Icon, title, text }) => (
+            {/* Phone: 2 per row, the last card spans the full row */}
+
+            {VALUES.map(({ icon: Icon, title, text }, index) => (
               <article
                 key={title}
-                className="
+                className={`
                   group
                   rounded-2xl
                   border
                   border-white/15
-                  bg-black/20
-                  p-7
+                  bg-black/35
+                  p-4
                   backdrop-blur-xl
                   backdrop-saturate-150
                   shadow-[0_20px_60px_rgba(0,0,0,0.18)]
                   transition-all
                   duration-500
-                  hover:-translate-y-1
+                  sm:hover:-translate-y-1
                   hover:border-amber-500/40
-                  hover:bg-black/30
+                  hover:bg-black/40
                   sm:p-8
-                "
+                  ${index === VALUES.length - 1 ? "col-span-2 md:col-span-1" : ""}
+                `}
               >
 
                 <span
                   className="
                     flex
-                    h-10
-                    w-10
+                    h-9
+                    w-9
                     items-center
                     justify-center
                     rounded-full
@@ -619,17 +676,22 @@ const About = () => {
                     border-amber-500/30
                     bg-amber-500/10
                     text-amber-400
+                    sm:h-10
+                    sm:w-10
                   "
                 >
-                  <Icon className="h-5 w-5" />
+                  <Icon className="h-4 w-4 sm:h-5 sm:w-5" />
                 </span>
 
                 <h3
                   className="
-                    mt-7
+                    mt-4
                     font-serif
-                    text-2xl
+                    text-lg
+                    leading-snug
                     text-white
+                    sm:mt-7
+                    sm:text-2xl
                   "
                 >
                   {title}
@@ -637,11 +699,14 @@ const About = () => {
 
                 <p
                   className="
-                    mt-3
-                    max-w-xs
-                    text-sm
-                    leading-6
-                    text-white/65
+                    mt-2
+                    text-xs
+                    leading-5
+                    text-white/75
+                    sm:mt-3
+                    sm:max-w-xs
+                    sm:text-sm
+                    sm:leading-6
                   "
                 >
                   {text}
@@ -667,10 +732,12 @@ const About = () => {
             mx-auto
             grid
             max-w-7xl
-            gap-12
-            px-6
-            py-20
+            gap-4
+            px-4
+            py-10
+            sm:gap-12
             sm:px-10
+            sm:py-20
             lg:grid-cols-2
             lg:items-end
             lg:gap-20
@@ -681,7 +748,7 @@ const About = () => {
 
           {/* LEFT */}
 
-          <GlassText className="p-7 sm:p-9">
+          <GlassText className="p-6 sm:p-9">
 
             <p
               className="
@@ -697,9 +764,10 @@ const About = () => {
 
             <h2
               className="
-                mt-5
+                mt-3
                 font-serif
-                text-4xl
+                text-3xl
+                sm:mt-5
                 leading-tight
                 tracking-[-0.025em]
                 text-white
@@ -717,7 +785,7 @@ const About = () => {
             className="
               border-l-2
               border-l-amber-500/50
-              p-7
+              p-6
               sm:p-9
             "
           >
@@ -725,9 +793,9 @@ const About = () => {
             <p
               className="
                 font-serif
-                text-2xl
-                leading-9
-                text-white/80
+                text-xl
+                leading-8
+                text-white/85
                 sm:text-3xl
                 sm:leading-10
               "
@@ -742,7 +810,7 @@ const About = () => {
                 items-center
                 gap-3
                 text-sm
-                text-white/50
+                text-white/65
               "
             >
               <FiUsers className="h-4 w-4 text-amber-400" />
@@ -764,16 +832,18 @@ const About = () => {
         className="
           relative
           bg-transparent
-          px-6
-          py-20
+          px-4
+          pb-16
+          pt-10
           text-center
           sm:px-10
+          sm:py-20
           lg:px-16
           lg:py-28
         "
       >
 
-        <GlassText className="mx-auto max-w-4xl p-8 sm:p-12 lg:p-16">
+        <GlassText className="mx-auto max-w-4xl p-6 sm:p-12 lg:p-16">
 
           <p
             className="
@@ -790,10 +860,11 @@ const About = () => {
           <h2
             className="
               mx-auto
-              mt-5
+              mt-4
               max-w-2xl
               font-serif
-              text-4xl
+              text-3xl
+              sm:mt-5
               leading-tight
               tracking-[-0.025em]
               text-white
@@ -806,7 +877,75 @@ const About = () => {
             </span>
           </h2>
 
+          <div
+            className="
+              mt-7
+              flex
+              flex-col
+              justify-center
+              gap-3
+              sm:mt-10
+              sm:flex-row
+            "
+          >
+            <button
+              type="button"
+              onClick={() => navigate("/rooms")}
+              className="
+                inline-flex
+                items-center
+                justify-center
+                gap-2
+                rounded-xl
+                bg-gradient-to-r
+                from-amber-500
+                to-amber-600
+                px-8
+                py-3.5
+                text-sm
+                font-semibold
+                text-white
+                shadow-[0_0_25px_rgba(245,158,11,0.3)]
+                transition-all
+                duration-300
+                hover:-translate-y-0.5
+                hover:from-amber-400
+                hover:to-amber-500
+              "
+            >
+              Find your stay
+              <FiArrowUpRight className="h-4 w-4" />
+            </button>
 
+            <button
+              type="button"
+              onClick={() => navigate("/services")}
+              className="
+                inline-flex
+                items-center
+                justify-center
+                gap-2
+                rounded-xl
+                border
+                border-white/15
+                bg-white/5
+                px-8
+                py-3.5
+                text-sm
+                font-semibold
+                text-white
+                backdrop-blur-md
+                transition-all
+                duration-300
+                hover:border-amber-500/50
+                hover:bg-white/10
+                hover:text-amber-300
+              "
+            >
+              Our services
+              <FiArrowUpRight className="h-4 w-4" />
+            </button>
+          </div>
 
         </GlassText>
 

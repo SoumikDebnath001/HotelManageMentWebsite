@@ -67,20 +67,20 @@ const ManagerBookings = () => {
     return d.getTime() === today.getTime();
   };
 
-  const selectClass = "bg-black/40 border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white focus:border-amber-500 focus:outline-none [&>option]:bg-stone-900";
+  const selectClass = "min-w-0 bg-black/40 border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white focus:border-amber-500 focus:outline-none [&>option]:bg-stone-900";
   const actionClass = "px-3 py-1.5 rounded-lg transition-colors text-xs font-semibold flex items-center gap-1 disabled:opacity-50";
 
   return (
     <div className="animate-in fade-in zoom-in duration-500 relative">
-      <div className="mb-8">
-        <h1 className="text-3xl font-serif font-bold text-white mb-2">Bookings</h1>
+      <div className="mb-6 sm:mb-8">
+        <h1 className="text-2xl sm:text-3xl font-serif font-bold text-white mb-2">Bookings</h1>
         <p className="text-stone-400">Verify arrivals, check guests in and out, and process refunds for cancelled paid stays.</p>
       </div>
 
       {/* Filters */}
-      <div className="flex flex-col md:flex-row gap-3 mb-4">
-        <div className="relative flex-1 max-w-sm">
-          <FiSearch className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-500" />
+      <div className="grid grid-cols-2 gap-2 mb-4 md:flex md:gap-3">
+        <div className="relative col-span-2 flex-1 md:max-w-sm">
+          <FiSearch className="pointer-events-none absolute left-4 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-stone-500" />
           <input
             value={search}
             onChange={(e) => { setSearch(e.target.value); setPage(1); }}
@@ -89,11 +89,11 @@ const ManagerBookings = () => {
           />
         </div>
         <select value={bookingStatus} onChange={(e) => { setBookingStatus(e.target.value); setPage(1); }} className={selectClass}>
-          <option value="">All booking statuses</option>
+          <option value="">All bookings</option>
           {BOOKING_STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
         </select>
         <select value={paymentStatus} onChange={(e) => { setPaymentStatus(e.target.value); setPage(1); }} className={selectClass}>
-          <option value="">All payment statuses</option>
+          <option value="">All payments</option>
           {PAYMENT_STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
         </select>
       </div>

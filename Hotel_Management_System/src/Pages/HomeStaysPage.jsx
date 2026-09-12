@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   FiStar,
@@ -165,7 +165,7 @@ const HomeStaysPage = () => {
           HERO BANNER
       =================================================== */}
 
-      <section className="relative overflow-hidden pb-8 pt-32 sm:pt-36 lg:pt-40">
+      <section className="relative overflow-hidden pb-6 pt-24 sm:pb-8 sm:pt-36 lg:pt-40">
         {/* Background image */}
 
         <div className="absolute inset-0 -z-10">
@@ -180,9 +180,9 @@ const HomeStaysPage = () => {
 
         {/* Ambient glow */}
 
-        <div className="pointer-events-none absolute left-1/2 top-1/3 -z-10 h-[400px] w-[400px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-amber-500/[0.08] blur-[120px]" />
+        <div className="pointer-events-none absolute left-1/2 top-1/3 -z-10 h-[260px] w-[260px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-amber-500/[0.08] blur-[100px] sm:h-[400px] sm:w-[400px] sm:blur-[120px]" />
 
-        <div className="mx-auto max-w-7xl px-6 sm:px-10 lg:px-16">
+        <div className="mx-auto max-w-7xl px-4 sm:px-10 lg:px-16">
           <p
             className="
               mb-3
@@ -199,8 +199,9 @@ const HomeStaysPage = () => {
           <h1
             className="
               font-serif
-              text-4xl
+              text-3xl
               font-bold
+              leading-tight
               tracking-tight
               text-white
               sm:text-5xl
@@ -217,12 +218,14 @@ const HomeStaysPage = () => {
 
           <p
             className="
-              mt-4
+              mt-3
               max-w-xl
               text-sm
-              leading-7
+              leading-6
               text-stone-400
+              sm:mt-4
               sm:text-base
+              sm:leading-7
             "
           >
             Handpicked by our travel experts — the finest home
@@ -232,15 +235,15 @@ const HomeStaysPage = () => {
 
           {/* SEARCH & VIEW TOGGLE */}
 
-          <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div className="relative max-w-sm flex-1">
-              <FiSearch className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-500" />
+          <div className="mt-6 flex items-center gap-2 sm:mt-8 sm:justify-between sm:gap-4">
+            <div className="relative min-w-0 flex-1 sm:max-w-sm">
+              <FiSearch className="pointer-events-none absolute left-4 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-stone-400" />
 
               <input
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Search by name, location, or type..."
+                placeholder="Search stays, places, types..."
                 className="
                   w-full
                   rounded-xl
@@ -262,11 +265,13 @@ const HomeStaysPage = () => {
               />
             </div>
 
-            <div className="flex gap-2">
+            <div className="flex shrink-0 gap-2">
               <button
                 type="button"
                 onClick={() => setViewMode("grid")}
-                className={`rounded-lg border p-2.5 transition-all ${
+                aria-label="Grid view"
+                aria-pressed={viewMode === "grid"}
+                className={`rounded-lg border p-3 transition-all sm:p-2.5 ${
                   viewMode === "grid"
                     ? "border-amber-500/50 bg-amber-500/15 text-amber-400"
                     : "border-white/10 bg-stone-900/40 text-stone-500 hover:text-white"
@@ -278,7 +283,9 @@ const HomeStaysPage = () => {
               <button
                 type="button"
                 onClick={() => setViewMode("list")}
-                className={`rounded-lg border p-2.5 transition-all ${
+                aria-label="List view"
+                aria-pressed={viewMode === "list"}
+                className={`rounded-lg border p-3 transition-all sm:p-2.5 ${
                   viewMode === "list"
                     ? "border-amber-500/50 bg-amber-500/15 text-amber-400"
                     : "border-white/10 bg-stone-900/40 text-stone-500 hover:text-white"
@@ -288,6 +295,11 @@ const HomeStaysPage = () => {
               </button>
             </div>
           </div>
+
+          <p className="mt-4 text-xs text-stone-500">
+            {filtered.length} stay{filtered.length === 1 ? "" : "s"}
+            {searchTerm ? ` matching "${searchTerm}"` : ""}
+          </p>
         </div>
       </section>
 
@@ -295,7 +307,7 @@ const HomeStaysPage = () => {
           STAYS GRID / LIST
       =================================================== */}
 
-      <section className="mx-auto max-w-7xl px-6 pb-20 sm:px-10 lg:px-16">
+      <section className="mx-auto max-w-7xl px-4 pb-16 sm:px-10 sm:pb-20 lg:px-16">
         {filtered.length === 0 ? (
           <div className="py-20 text-center">
             <p className="text-lg text-stone-500">
@@ -308,8 +320,9 @@ const HomeStaysPage = () => {
           <div
             className="
               grid
-              gap-6
-              sm:grid-cols-2
+              grid-cols-2
+              gap-3
+              sm:gap-6
               lg:grid-cols-3
             "
           >
@@ -329,17 +342,19 @@ const HomeStaysPage = () => {
                   bg-stone-900/40
                   transition-all
                   duration-300
-                  hover:-translate-y-1
+                  sm:hover:-translate-y-1
                   hover:border-white/15
                   hover:shadow-[0_20px_50px_rgba(0,0,0,0.5)]
                 "
               >
                 {/* IMAGE */}
 
-                <div className="relative h-52 overflow-hidden">
+                <div className="relative h-32 overflow-hidden sm:h-52">
                   <img
                     src={stay.image}
                     alt={stay.name}
+                    loading="lazy"
+                    decoding="async"
                     className="
                       h-full
                       w-full
@@ -357,19 +372,24 @@ const HomeStaysPage = () => {
                   <div
                     className="
                       absolute
-                      left-3
-                      top-3
+                      left-2
+                      top-2
                       flex
-                      h-8
-                      w-8
+                      h-6
+                      w-6
                       items-center
                       justify-center
                       rounded-full
                       bg-amber-500
-                      text-xs
+                      text-[10px]
                       font-bold
                       text-white
                       shadow-lg
+                      sm:left-3
+                      sm:top-3
+                      sm:h-8
+                      sm:w-8
+                      sm:text-xs
                     "
                   >
                     {i + 1}
@@ -380,20 +400,25 @@ const HomeStaysPage = () => {
                   <span
                     className="
                       absolute
-                      right-3
-                      top-3
+                      right-2
+                      top-2
                       rounded-full
                       border
                       border-white/20
                       bg-black/40
-                      px-3
-                      py-1
-                      text-[10px]
+                      px-2
+                      py-0.5
+                      text-[9px]
                       font-semibold
                       uppercase
                       tracking-wider
                       text-white
                       backdrop-blur-sm
+                      sm:right-3
+                      sm:top-3
+                      sm:px-3
+                      sm:py-1
+                      sm:text-[10px]
                     "
                   >
                     {stay.type}
@@ -404,19 +429,24 @@ const HomeStaysPage = () => {
                   <div
                     className="
                       absolute
-                      bottom-3
-                      right-3
+                      bottom-2
+                      right-2
                       inline-flex
                       items-center
                       gap-1
                       rounded-full
-                      bg-black/40
-                      px-2.5
-                      py-1
-                      text-xs
+                      bg-black/50
+                      px-2
+                      py-0.5
+                      text-[11px]
                       font-semibold
                       text-amber-300
                       backdrop-blur-sm
+                      sm:bottom-3
+                      sm:right-3
+                      sm:px-2.5
+                      sm:py-1
+                      sm:text-xs
                     "
                   >
                     <FiStar className="h-3 w-3" />
@@ -426,13 +456,15 @@ const HomeStaysPage = () => {
 
                 {/* INFO */}
 
-                <div className="p-5">
+                <div className="p-3 sm:p-5">
                   <h3
                     className="
-                      text-base
+                      truncate
+                      text-sm
                       font-semibold
                       text-white
                       group-hover:text-amber-200
+                      sm:text-base
                     "
                   >
                     {stay.name}
@@ -440,25 +472,31 @@ const HomeStaysPage = () => {
 
                   <p
                     className="
-                      mt-1.5
-                      inline-flex
+                      mt-1
+                      flex
+                      min-w-0
                       items-center
-                      gap-1.5
-                      text-xs
+                      gap-1
+                      text-[11px]
                       text-stone-400
+                      sm:mt-1.5
+                      sm:gap-1.5
+                      sm:text-xs
                     "
                   >
-                    <FiMapPin className="h-3 w-3 text-amber-500/60" />
-                    {stay.location}
+                    <FiMapPin className="h-3 w-3 shrink-0 text-amber-500/60" />
+                    <span className="truncate">{stay.location}</span>
                   </p>
 
                   <p
                     className="
                       mt-3
+                      hidden
                       text-xs
                       leading-5
                       text-stone-500
                       line-clamp-2
+                      sm:block
                     "
                   >
                     {stay.description}
@@ -466,14 +504,15 @@ const HomeStaysPage = () => {
 
                   <div
                     className="
-                      mt-4
+                      mt-2.5
                       flex
                       items-center
                       justify-between
+                      sm:mt-4
                     "
                   >
                     <div className="flex items-baseline gap-1">
-                      <span className="text-lg font-bold text-white">
+                      <span className="text-base font-bold text-white sm:text-lg">
                         {stay.price}
                       </span>
 
@@ -490,14 +529,14 @@ const HomeStaysPage = () => {
                         text-xs
                         font-medium
                         text-amber-400
-                        opacity-0
                         transition-opacity
                         duration-300
-                        group-hover:opacity-100
+                        sm:opacity-0
+                        sm:group-hover:opacity-100
                       "
                     >
-                      View Details
-                      <FiArrowUpRight className="h-3.5 w-3.5" />
+                      <span className="hidden sm:inline">View Details</span>
+                      <FiArrowUpRight className="h-4 w-4 sm:h-3.5 sm:w-3.5" />
                     </span>
                   </div>
                 </div>
@@ -507,7 +546,7 @@ const HomeStaysPage = () => {
         ) : (
           /* ================= LIST VIEW ================= */
 
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-3 sm:gap-4">
             {filtered.map((stay, i) => (
               <div
                 key={stay.id}
@@ -531,10 +570,12 @@ const HomeStaysPage = () => {
               >
                 {/* IMAGE */}
 
-                <div className="relative h-40 w-48 shrink-0 overflow-hidden sm:h-48 sm:w-56">
+                <div className="relative w-28 shrink-0 overflow-hidden sm:h-48 sm:w-56">
                   <img
                     src={stay.image}
                     alt={stay.name}
+                    loading="lazy"
+                    decoding="async"
                     className="
                       h-full
                       w-full
@@ -548,19 +589,24 @@ const HomeStaysPage = () => {
                   <div
                     className="
                       absolute
-                      left-3
-                      top-3
+                      left-2
+                      top-2
                       flex
-                      h-7
-                      w-7
+                      h-6
+                      w-6
                       items-center
                       justify-center
                       rounded-full
                       bg-amber-500
-                      text-[11px]
+                      text-[10px]
                       font-bold
                       text-white
                       shadow-lg
+                      sm:left-3
+                      sm:top-3
+                      sm:h-7
+                      sm:w-7
+                      sm:text-[11px]
                     "
                   >
                     {i + 1}
@@ -569,28 +615,30 @@ const HomeStaysPage = () => {
 
                 {/* INFO */}
 
-                <div className="flex flex-1 flex-col justify-between p-5">
+                <div className="flex min-w-0 flex-1 flex-col justify-between p-3 sm:p-5">
                   <div>
-                    <div className="flex items-start justify-between">
-                      <div>
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="min-w-0">
                         <h3
                           className="
-                            text-base
+                            truncate
+                            text-sm
                             font-semibold
                             text-white
                             group-hover:text-amber-200
+                            sm:text-base
                           "
                         >
                           {stay.name}
                         </h3>
 
-                        <p className="mt-1 inline-flex items-center gap-1.5 text-xs text-stone-400">
-                          <FiMapPin className="h-3 w-3 text-amber-500/60" />
-                          {stay.location}
+                        <p className="mt-1 flex min-w-0 items-center gap-1 text-[11px] text-stone-400 sm:gap-1.5 sm:text-xs">
+                          <FiMapPin className="h-3 w-3 shrink-0 text-amber-500/60" />
+                          <span className="truncate">{stay.location}</span>
                         </p>
                       </div>
 
-                      <div className="inline-flex items-center gap-1 text-xs font-semibold text-amber-300">
+                      <div className="inline-flex shrink-0 items-center gap-1 text-xs font-semibold text-amber-300">
                         <FiStar className="h-3 w-3" />
                         {stay.rating}
                       </div>
@@ -601,9 +649,9 @@ const HomeStaysPage = () => {
                     </p>
                   </div>
 
-                  <div className="mt-3 flex items-center justify-between">
+                  <div className="mt-2 flex items-center justify-between sm:mt-3">
                     <div className="flex items-baseline gap-1.5">
-                      <span className="text-lg font-bold text-white">
+                      <span className="text-base font-bold text-white sm:text-lg">
                         {stay.price}
                       </span>
 
@@ -615,6 +663,8 @@ const HomeStaysPage = () => {
                     <div className="flex items-center gap-3">
                       <span
                         className="
+                          hidden
+                          sm:inline
                           rounded-full
                           border
                           border-white/10
@@ -641,8 +691,8 @@ const HomeStaysPage = () => {
                           text-amber-400
                         "
                       >
-                        View Details
-                        <FiArrowUpRight className="h-3.5 w-3.5" />
+                        <span className="hidden sm:inline">View Details</span>
+                        <FiArrowUpRight className="h-4 w-4 sm:h-3.5 sm:w-3.5" />
                       </span>
                     </div>
                   </div>

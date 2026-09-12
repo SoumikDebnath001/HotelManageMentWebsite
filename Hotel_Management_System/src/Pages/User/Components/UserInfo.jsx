@@ -253,10 +253,10 @@ const UserInfo = () => {
         <div className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-amber-500/10 blur-[80px]" />
         
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 border-b border-white/10 pb-6 mb-6">
-          <div className="flex items-center gap-5">
+          <div className="flex w-full min-w-0 items-center gap-4 sm:w-auto sm:gap-5">
             
             {/* Circular Progress Avatar */}
-            <div className="relative flex h-24 w-24 items-center justify-center">
+            <div className="relative flex h-24 w-24 shrink-0 items-center justify-center">
               {completeness < 100 && (
                 <svg className="absolute inset-0 h-24 w-24 -rotate-90 transform" viewBox="0 0 80 80">
                   <circle
@@ -313,12 +313,12 @@ const UserInfo = () => {
               )}
             </div>
 
-            <div>
-              <h3 className="font-serif text-2xl font-bold text-white">
+            <div className="min-w-0">
+              <h3 className="font-serif text-xl font-bold text-white break-words sm:text-2xl">
                 {formData.firstMiddleName} {formData.lastName}
               </h3>
-              <p className="text-stone-400 flex items-center gap-2 mt-1 text-sm">
-                <FiMail className="h-4 w-4" /> {profile?.email}
+              <p className="text-stone-400 flex items-center gap-2 mt-1 text-sm min-w-0">
+                <FiMail className="h-4 w-4 shrink-0" /> <span className="truncate">{profile?.email}</span>
               </p>
               {completeness < 100 && (
                 <p className="mt-2 text-xs text-amber-400/80 flex items-center gap-1">

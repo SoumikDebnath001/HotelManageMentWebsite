@@ -1447,6 +1447,7 @@ const HeroSlideBackground = () => {
             {heroData.contentType === "topStays" && (
               <TopPicksGrid
                 heading="Top 10 Home Stays of the Year"
+                mobileHeading="Our Best Connected Home Stays"
                 eyebrow="CURATED PICKS"
                 items={topStays}
                 type="stay"
@@ -1461,6 +1462,7 @@ const HeroSlideBackground = () => {
             {heroData.contentType === "topOffers" && (
               <TopPicksGrid
                 heading="Top 10 Offers"
+                mobileHeading="Our Best Offers"
                 eyebrow="EXCLUSIVE DEALS"
                 items={topOffers}
                 type="offer"
@@ -2013,6 +2015,7 @@ const TopPickCard = ({
   rank,
   type,
   navigate,
+  className = "",
 }) => {
   const isOffer = type === "offer";
 
@@ -2023,11 +2026,12 @@ const TopPickCard = ({
           state: item,
         })
       }
-      className="
+      className={`
         group
         relative
-        h-[clamp(120px,21vh,210px)]
+        h-[clamp(104px,17.5vh,150px)]
         w-full
+        sm:h-[clamp(120px,21vh,210px)]
         cursor-pointer
         overflow-hidden
         rounded-2xl
@@ -2037,7 +2041,8 @@ const TopPickCard = ({
         transition-colors
         duration-200
         hover:border-amber-400/40
-      "
+        ${className}
+      `}
     >
       {/* IMAGE */}
 
@@ -2076,7 +2081,8 @@ const TopPickCard = ({
           flex
           flex-col
           justify-between
-          p-3
+          p-2.5
+          sm:p-3
         "
       >
         {/* TOP BADGES */}
@@ -2156,8 +2162,8 @@ const TopPickCard = ({
           </p>
 
           <div className="mt-1.5 flex items-center justify-between">
-            <div className="flex items-baseline gap-1">
-              <span className="text-base font-bold text-white drop-shadow-md">
+            <div className="flex items-baseline gap-1 whitespace-nowrap">
+              <span className="text-sm font-bold text-white drop-shadow-md sm:text-base">
                 {item.price}
               </span>
 
@@ -2166,7 +2172,7 @@ const TopPickCard = ({
               </span>
 
               {isOffer && item.originalPrice && (
-                <span className="ml-1 text-[10px] text-stone-500 line-through">
+                <span className="ml-1 hidden text-[10px] text-stone-500 line-through sm:inline">
                   {item.originalPrice}
                 </span>
               )}
@@ -2201,12 +2207,14 @@ const TopPickCard = ({
 
    Slide 2 / Slide 3 content.
 
-   Static layout: 2 rows x 5 cards.
+   Static layout: 2 rows x 5 cards (phone: 3 rows x 2, first 6 only).
    No auto-rotation, no 3D transforms.
 ========================================================= */
 
 const TopPicksGrid = ({
   heading,
+  mobileHeading,
+  mobileLimit = 6,
   eyebrow,
   items,
   type,
@@ -2225,9 +2233,11 @@ const TopPicksGrid = ({
         items-center
         justify-center
         px-4
-        pb-8
-        pt-16
+        pb-4
+        pt-20
         sm:px-8
+        sm:pb-8
+        sm:pt-16
         lg:px-16
       "
     >
@@ -2246,12 +2256,14 @@ const TopPicksGrid = ({
       >
         <p
           className="
-            mb-3
+            mb-2
             font-mono
-            text-[11px]
+            text-[10px]
             font-bold
             uppercase
             tracking-[0.3em]
+            sm:mb-3
+            sm:text-[11px]
             text-amber-400
             drop-shadow-md
           "
@@ -2259,14 +2271,33 @@ const TopPicksGrid = ({
           {eyebrow}
         </p>
 
+        {/* Phone shows fewer cards, so it gets its own heading */}
+
         <h2
           className="
+            font-serif
+            text-2xl
+            font-bold
+            leading-tight
+            tracking-tight
+            text-white
+            drop-shadow-lg
+            sm:hidden
+          "
+        >
+          {mobileHeading || heading}
+        </h2>
+
+        <h2
+          className="
+            hidden
             font-serif
             text-3xl
             font-bold
             tracking-tight
             text-white
             drop-shadow-lg
+            sm:block
             sm:text-4xl
             lg:text-5xl
           "
@@ -2275,18 +2306,19 @@ const TopPicksGrid = ({
         </h2>
       </div>
 
-      {/* CARD GRID — 2 ROWS x 5 CARDS */}
+      {/* CARD GRID — PHONE: 3 ROWS x 2 CARDS, SM+: 2 ROWS x 5 CARDS */}
 
       <div
         className="
           relative
           z-10
-          mt-8
+          mt-5
           grid
           w-full
           max-w-300
           grid-cols-2
           gap-3
+          sm:mt-8
           sm:grid-cols-5
           sm:gap-4
         "
@@ -2298,6 +2330,7 @@ const TopPicksGrid = ({
             rank={index + 1}
             type={type}
             navigate={navigate}
+            className={index >= mobileLimit ? "hidden sm:block" : ""}
           />
         ))}
       </div>
@@ -2308,10 +2341,11 @@ const TopPicksGrid = ({
         className="
           relative
           z-20
-          mt-8
+          mt-5
           flex
           shrink-0
           justify-center
+          sm:mt-8
         "
       >
         {exploreLink && (
@@ -2321,14 +2355,18 @@ const TopPicksGrid = ({
             className="
               inline-flex
               items-center
-              gap-3
+              gap-2
               rounded-full
               bg-linear-to-r
               from-amber-500
               to-amber-600
-              px-8
-              py-3.5
-              text-base
+              px-6
+              py-3
+              text-sm
+              sm:gap-3
+              sm:px-8
+              sm:py-3.5
+              sm:text-base
               font-bold
               tracking-wide
               text-white
@@ -2340,7 +2378,7 @@ const TopPicksGrid = ({
             "
           >
             {exploreLabel}
-            <FiArrowUpRight className="h-5 w-5" />
+            <FiArrowUpRight className="h-4 w-4 sm:h-5 sm:w-5" />
           </button>
         )}
       </div>

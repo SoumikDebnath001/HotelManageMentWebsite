@@ -26,9 +26,9 @@ const TABS = [
 const money = (n) => `₹${Number(n || 0).toLocaleString()}`;
 
 const StatCard = ({ label, value, accent = "text-white" }) => (
-  <div className="rounded-2xl border border-white/10 bg-black/40 p-5">
-    <p className="text-[11px] font-semibold uppercase tracking-wider text-stone-500">{label}</p>
-    <p className={`mt-2 font-serif text-2xl font-bold ${accent}`}>{value}</p>
+  <div className="rounded-2xl border border-white/10 bg-black/40 p-4 sm:p-5">
+    <p className="text-[10px] font-semibold uppercase tracking-wider text-stone-500 sm:text-[11px]">{label}</p>
+    <p className={`mt-2 font-serif text-xl font-bold sm:text-2xl ${accent}`}>{value}</p>
   </div>
 );
 
@@ -119,7 +119,7 @@ const SuperAdminReports = () => {
       const count = (status) => summary.find((s) => s._id === status)?.count || 0;
       return (
         <div className="space-y-6">
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
             <StatCard label="Booked" value={count("booked")} accent="text-amber-400" />
             <StatCard label="Checked in" value={count("checkedIn")} accent="text-blue-400" />
             <StatCard label="Checked out" value={count("checkedOut")} accent="text-emerald-400" />
@@ -148,24 +148,24 @@ const SuperAdminReports = () => {
       const max = Math.max(1, ...rows.map((r) => r.totalRevenue));
       return (
         <div className="space-y-6">
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
             <StatCard label="Total revenue" value={money(report.totalRevenue)} accent="text-emerald-400" />
             <StatCard label="Payments" value={report.totalPayments || 0} />
             <StatCard label="Refunded" value={money(report.totalRefunded)} accent="text-purple-300" />
             <StatCard label="Refunds" value={report.totalRefunds || 0} />
           </div>
           {rows.length ? (
-            <div className="rounded-2xl border border-white/10 bg-black/40 p-6">
+            <div className="rounded-2xl border border-white/10 bg-black/40 p-4 sm:p-6">
               <p className="text-xs font-semibold uppercase tracking-wider text-stone-500 mb-4">Revenue by day</p>
               <div className="space-y-2">
                 {rows.map((r) => (
-                  <div key={r._id} className="flex items-center gap-3 text-xs">
-                    <span className="w-24 shrink-0 font-mono text-stone-400">{r._id}</span>
+                  <div key={r._id} className="flex items-center gap-2 text-xs sm:gap-3">
+                    <span className="w-20 shrink-0 font-mono text-[11px] text-stone-400 sm:w-24 sm:text-xs">{r._id}</span>
                     <div className="flex-1 h-5 rounded-md bg-white/5 overflow-hidden">
                       <div className="h-full rounded-md bg-gradient-to-r from-amber-500 to-amber-600" style={{ width: `${Math.max(2, (r.totalRevenue / max) * 100)}%` }} />
                     </div>
-                    <span className="w-28 shrink-0 text-right text-emerald-400 font-semibold">{money(r.totalRevenue)}</span>
-                    <span className="w-16 shrink-0 text-right text-stone-500">{r.totalPayments} pay.</span>
+                    <span className="shrink-0 text-right text-emerald-400 font-semibold sm:w-28">{money(r.totalRevenue)}</span>
+                    <span className="hidden w-16 shrink-0 text-right text-stone-500 sm:inline">{r.totalPayments} pay.</span>
                   </div>
                 ))}
               </div>
@@ -236,7 +236,7 @@ const SuperAdminReports = () => {
       const sum = (status) => summary.find((s) => s._id === status) || { count: 0, totalAmount: 0 };
       return (
         <div className="space-y-6">
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
             <StatCard label="Paid" value={money(sum("paid").totalAmount)} accent="text-emerald-400" />
             <StatCard label="Paid transactions" value={sum("paid").count} />
             <StatCard label="Refunded" value={money(sum("refunded").totalAmount)} accent="text-purple-300" />
@@ -266,13 +266,13 @@ const SuperAdminReports = () => {
 
   return (
     <div className="animate-in fade-in zoom-in duration-500 relative">
-      <div className="mb-6">
-        <h1 className="text-3xl font-serif font-bold text-white mb-2 flex items-center gap-3"><FiBarChart2 className="text-amber-400" /> Reports & Analytics</h1>
+      <div className="mb-5 sm:mb-6">
+        <h1 className="text-2xl sm:text-3xl font-serif font-bold text-white mb-2 flex items-center gap-3"><FiBarChart2 className="text-amber-400" /> Reports & Analytics</h1>
         <p className="text-stone-400">Bookings, revenue, customers, hotel performance, occupancy and payments.</p>
       </div>
 
       {/* Tabs */}
-      <div className="flex flex-wrap gap-2 mb-5">
+      <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 mb-4 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:px-0 sm:mb-5">
         {TABS.map((t) => {
           const Icon = t.icon;
           const active = t.key === tab;
@@ -280,7 +280,7 @@ const SuperAdminReports = () => {
             <button
               key={t.key}
               onClick={() => switchTab(t.key)}
-              className={`inline-flex items-center gap-2 rounded-xl border px-4 py-2 text-sm font-medium transition-all ${active ? "border-amber-500/40 bg-amber-500/15 text-amber-300" : "border-white/10 bg-black/40 text-stone-400 hover:bg-white/5 hover:text-white"}`}
+              className={`inline-flex shrink-0 items-center gap-2 rounded-xl border px-4 py-2 text-sm font-medium transition-all ${active ? "border-amber-500/40 bg-amber-500/15 text-amber-300" : "border-white/10 bg-black/40 text-stone-400 hover:bg-white/5 hover:text-white"}`}
             >
               <Icon className="h-4 w-4" /> {t.label}
             </button>
@@ -289,15 +289,17 @@ const SuperAdminReports = () => {
       </div>
 
       {/* Filters */}
-      <div className="flex flex-wrap items-center gap-3 mb-5">
+      <div className="grid grid-cols-2 items-end gap-2 mb-5 sm:flex sm:flex-wrap sm:items-center sm:gap-3">
         {activeTab?.dated && (
           <>
-            <label className="text-xs text-stone-500">From</label>
-            <input type="date" value={fromDate} onChange={(e) => { setFromDate(e.target.value); setPage(1); }} className={inputClass} />
-            <label className="text-xs text-stone-500">To</label>
-            <input type="date" value={toDate} onChange={(e) => { setToDate(e.target.value); setPage(1); }} className={inputClass} />
+            <label className="flex min-w-0 flex-col gap-1 text-xs text-stone-500 sm:flex-row sm:items-center sm:gap-3">From
+              <input type="date" value={fromDate} onChange={(e) => { setFromDate(e.target.value); setPage(1); }} className={`${inputClass} w-full min-w-0 sm:w-auto`} />
+            </label>
+            <label className="flex min-w-0 flex-col gap-1 text-xs text-stone-500 sm:flex-row sm:items-center sm:gap-3">To
+              <input type="date" value={toDate} onChange={(e) => { setToDate(e.target.value); setPage(1); }} className={`${inputClass} w-full min-w-0 sm:w-auto`} />
+            </label>
             {(fromDate || toDate) && (
-              <button onClick={() => { setFromDate(""); setToDate(""); setPage(1); }} className="text-xs text-stone-400 underline-offset-4 hover:text-white hover:underline">Clear dates</button>
+              <button onClick={() => { setFromDate(""); setToDate(""); setPage(1); }} className="col-span-2 text-left text-xs text-stone-400 underline-offset-4 hover:text-white hover:underline">Clear dates</button>
             )}
           </>
         )}
@@ -306,7 +308,7 @@ const SuperAdminReports = () => {
             value={search}
             onChange={(e) => { setSearch(e.target.value); setPage(1); }}
             placeholder={tab === "customers" ? "Search name or email..." : "Search hotel name..."}
-            className={`${inputClass} w-64`}
+            className={`${inputClass} col-span-2 w-full sm:w-64`}
           />
         )}
       </div>

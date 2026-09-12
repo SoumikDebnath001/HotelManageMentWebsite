@@ -1,13 +1,15 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   FiArrowUpRight,
+  FiArrowDown,
   FiStar,
   FiCoffee,
   FiDroplet,
   FiSun,
   FiUsers,
   FiHeart,
+  FiCheck,
 } from "react-icons/fi";
 import Traveler from "../assets/ServicesPage/Traveler.svg";
 
@@ -77,6 +79,12 @@ const highlights = [
   { number: "98%", label: "Guest Satisfaction" },
 ];
 
+const differences = [
+  "Personally curated experiences for every guest",
+  "Locally sourced ingredients in every meal",
+  "Sustainable practices woven into every detail",
+];
+
 /* =========================================================
    BACKGROUND
 ========================================================= */
@@ -94,10 +102,10 @@ const GlassPanel = ({ children, className = "" }) => {
       className={`
         rounded-3xl
         border border-white/15
-        bg-black/20
+        bg-black/35
         backdrop-blur-xl
         backdrop-saturate-150
-        shadow-[0_20px_70px_rgba(0,0,0,0.22)]
+        shadow-[0_20px_70px_rgba(0,0,0,0.25)]
         ${className}
       `}
     >
@@ -105,6 +113,29 @@ const GlassPanel = ({ children, className = "" }) => {
     </div>
   );
 };
+
+/* =========================================================
+   EYEBROW
+========================================================= */
+
+const Eyebrow = ({ children, className = "" }) => (
+  <p
+    className={`
+      flex
+      items-center
+      gap-3
+      text-[11px]
+      font-semibold
+      uppercase
+      tracking-[0.2em]
+      text-amber-400
+      ${className}
+    `}
+  >
+    <span className="h-px w-8 bg-amber-400/70" />
+    {children}
+  </p>
+);
 
 /* =========================================================
    SERVICES PAGE
@@ -144,6 +175,12 @@ const Services = () => {
     };
   }, []);
 
+  const scrollToServices = () => {
+    document
+      .getElementById("our-services")
+      ?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
   return (
     <div className="relative min-h-screen overflow-hidden text-white">
 
@@ -169,7 +206,7 @@ const Services = () => {
           "
         />
 
-        <div className="absolute inset-0 bg-black/40" />
+        <div className="absolute inset-0 bg-black/45" />
 
         <div
           className="
@@ -178,21 +215,23 @@ const Services = () => {
             bg-gradient-to-b
             from-black/30
             via-black/10
-            to-black/55
+            to-black/60
           "
         />
       </div>
 
       {/* =====================================================
           HERO
+          Phone: illustration on top, text below.
+          Desktop: text left, illustration right.
       ===================================================== */}
 
       <section
         className="
           relative
-          min-h-screen
           overflow-hidden
           bg-transparent
+          lg:min-h-screen
         "
       >
 
@@ -202,23 +241,27 @@ const Services = () => {
             z-10
             mx-auto
             grid
-            min-h-screen
             w-full
             max-w-7xl
             items-center
-            gap-10
-            px-6
-            pb-20
-            pt-32
+            gap-6
+            px-4
+            pb-10
+            pt-24
+            sm:gap-10
             sm:px-10
+            sm:pb-16
+            sm:pt-32
+            lg:min-h-screen
             lg:grid-cols-2
             lg:gap-16
             lg:px-16
+            lg:pb-20
           "
         >
 
           {/* =================================================
-              LEFT — HERO TEXT
+              HERO TEXT
           ================================================= */}
 
           <div className="relative z-20">
@@ -226,36 +269,20 @@ const Services = () => {
             <GlassPanel
               className="
                 max-w-3xl
-                p-8
+                p-6
                 sm:p-10
                 lg:p-12
               "
             >
 
-              <p
-                className="
-                  mb-5
-                  flex
-                  items-center
-                  gap-3
-                  text-[11px]
-                  font-semibold
-                  uppercase
-                  tracking-[0.2em]
-                  text-amber-400
-                "
-              >
-                <span className="h-px w-9 bg-amber-400/70" />
-
-                Our Services
-              </p>
+              <Eyebrow className="mb-4 sm:mb-5">Our Services</Eyebrow>
 
               <h1
                 className="
                   max-w-3xl
                   font-serif
-                  text-5xl
-                  leading-[0.98]
+                  text-4xl
+                  leading-[1.02]
                   font-medium
                   tracking-[-0.035em]
                   text-white
@@ -264,39 +291,116 @@ const Services = () => {
                 "
               >
                 Exceptional experiences,{" "}
-                <span className="italic text-white/70">
+                <span className="italic text-white/75">
                   crafted for you.
                 </span>
               </h1>
 
               <p
                 className="
-                  mt-7
+                  mt-5
                   max-w-xl
-                  text-base
-                  leading-8
-                  text-white/80
+                  text-[15px]
+                  leading-7
+                  text-white/85
+                  sm:mt-7
                   sm:text-lg
+                  sm:leading-8
                 "
               >
                 Every service at ComfyStay is designed around a single idea:
                 making your stay feel effortless, personal, and extraordinary.
               </p>
 
+              {/* HERO ACTIONS */}
+
+              <div
+                className="
+                  mt-7
+                  flex
+                  flex-col
+                  gap-3
+                  sm:mt-9
+                  sm:flex-row
+                "
+              >
+                <button
+                  type="button"
+                  onClick={() => navigate("/rooms")}
+                  className="
+                    inline-flex
+                    items-center
+                    justify-center
+                    gap-2
+                    rounded-xl
+                    bg-gradient-to-r
+                    from-amber-500
+                    to-amber-600
+                    px-7
+                    py-3.5
+                    text-sm
+                    font-semibold
+                    text-white
+                    shadow-[0_0_25px_rgba(245,158,11,0.3)]
+                    transition-all
+                    duration-300
+                    hover:-translate-y-0.5
+                    hover:from-amber-400
+                    hover:to-amber-500
+                  "
+                >
+                  Book a room
+                  <FiArrowUpRight className="h-4 w-4" />
+                </button>
+
+                <button
+                  type="button"
+                  onClick={scrollToServices}
+                  className="
+                    inline-flex
+                    items-center
+                    justify-center
+                    gap-2
+                    rounded-xl
+                    border
+                    border-white/20
+                    bg-white/5
+                    px-7
+                    py-3.5
+                    text-sm
+                    font-semibold
+                    text-white
+                    backdrop-blur-md
+                    transition-all
+                    duration-300
+                    hover:border-amber-500/50
+                    hover:bg-white/10
+                    hover:text-amber-300
+                  "
+                >
+                  Explore services
+                  <FiArrowDown className="h-4 w-4" />
+                </button>
+              </div>
+
             </GlassPanel>
 
           </div>
 
           {/* =================================================
-              RIGHT — TRAVELER SVG
+              TRAVELER SVG — first on phone, right on desktop
           ================================================= */}
 
           <div
             className="
               relative
+              order-first
               flex
               items-center
               justify-center
+              py-4
+              sm:py-0
+              lg:order-none
               lg:min-h-[620px]
             "
           >
@@ -306,11 +410,14 @@ const Services = () => {
             <div
               className="
                 absolute
-                h-[320px]
-                w-[320px]
+                h-[220px]
+                w-[220px]
                 rounded-full
                 bg-amber-400/10
-                blur-[100px]
+                blur-[80px]
+                sm:h-[320px]
+                sm:w-[320px]
+                sm:blur-[100px]
               "
             />
 
@@ -319,13 +426,15 @@ const Services = () => {
             <div
               className="
                 absolute
-                h-[430px]
-                w-[430px]
+                h-[270px]
+                w-[270px]
                 rounded-full
                 border
                 border-white/10
                 bg-white/[0.025]
                 backdrop-blur-[2px]
+                sm:h-[430px]
+                sm:w-[430px]
               "
             />
 
@@ -333,17 +442,19 @@ const Services = () => {
 
             <img
               src={Traveler}
-              alt="Traveler"
+              alt="Traveler exploring world landmarks"
               className="
                 relative
                 z-10
                 w-full
-                max-w-[500px]
+                max-w-[240px]
                 object-contain
                 drop-shadow-[0_30px_60px_rgba(0,0,0,0.45)]
                 transition-transform
                 duration-700
                 hover:scale-[1.03]
+                sm:max-w-[400px]
+                lg:max-w-[500px]
               "
             />
 
@@ -360,31 +471,38 @@ const Services = () => {
         className="
           relative
           bg-transparent
-          px-6
-          py-12
+          px-4
+          py-6
           sm:px-10
+          sm:py-12
           lg:px-16
         "
       >
 
         <div className="mx-auto max-w-7xl">
 
-          <GlassPanel className="p-7 sm:p-9 lg:p-10">
+          <GlassPanel className="p-5 sm:p-9 lg:p-10">
 
             <div
               className="
                 grid
                 grid-cols-2
-                gap-8
+                gap-x-4
+                gap-y-6
+                sm:gap-8
                 lg:grid-cols-4
                 lg:gap-12
               "
             >
 
-              {highlights.map(({ number, label }) => (
+              {highlights.map(({ number, label }, index) => (
                 <div
                   key={label}
-                  className="text-center"
+                  className={`
+                    text-center
+                    lg:border-white/10
+                    ${index > 0 ? "lg:border-l" : ""}
+                  `}
                 >
 
                   <p
@@ -402,11 +520,12 @@ const Services = () => {
                   <p
                     className="
                       mt-1.5
-                      text-xs
+                      text-[10px]
                       font-medium
                       uppercase
                       tracking-[0.15em]
-                      text-white/55
+                      text-white/70
+                      sm:text-xs
                     "
                   >
                     {label}
@@ -427,12 +546,15 @@ const Services = () => {
       ===================================================== */}
 
       <section
+        id="our-services"
         className="
           relative
+          scroll-mt-20
           bg-transparent
-          px-6
-          py-20
+          px-4
+          py-12
           sm:px-10
+          sm:py-20
           lg:px-16
           lg:py-28
         "
@@ -442,81 +564,67 @@ const Services = () => {
 
           {/* SECTION HEADER */}
 
-          <GlassPanel
+          <div
             className="
-              mb-14
-              p-7
-              sm:p-9
-              lg:p-10
+              mb-8
+              flex
+              flex-col
+              justify-between
+              gap-4
+              sm:mb-14
+              lg:flex-row
+              lg:items-end
+              lg:gap-6
             "
           >
 
-            <p
-              className="
-                mb-4
-                text-[11px]
-                font-semibold
-                uppercase
-                tracking-[0.2em]
-                text-amber-400
-              "
-            >
-              What We Offer
-            </p>
-
-            <div
-              className="
-                flex
-                flex-col
-                justify-between
-                gap-6
-                lg:flex-row
-                lg:items-end
-              "
-            >
+            <div>
+              <Eyebrow className="mb-3 sm:mb-4">What We Offer</Eyebrow>
 
               <h2
                 className="
                   max-w-xl
                   font-serif
-                  text-4xl
+                  text-3xl
                   leading-tight
                   tracking-[-0.025em]
                   text-white
+                  drop-shadow-[0_2px_12px_rgba(0,0,0,0.5)]
                   sm:text-5xl
                 "
               >
                 Services designed around
-                <span className="italic text-white/70">
+                <span className="italic text-white/75">
                   {" "}your comfort.
                 </span>
               </h2>
-
-              <p
-                className="
-                  max-w-md
-                  text-sm
-                  leading-7
-                  text-white/65
-                  lg:text-right
-                "
-              >
-                From the moment you arrive to the moment you leave,
-                every detail is crafted to ensure an unforgettable
-                experience.
-              </p>
-
             </div>
 
-          </GlassPanel>
+            <p
+              className="
+                max-w-md
+                text-sm
+                leading-7
+                text-white/80
+                drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)]
+                lg:text-right
+              "
+            >
+              From the moment you arrive to the moment you leave,
+              every detail is crafted to ensure an unforgettable
+              experience.
+            </p>
 
-          {/* SERVICE CARDS */}
+          </div>
+
+          {/* SERVICE CARDS — 2 per row on phone, 3 on desktop */}
 
           <div
             className="
               grid
-              gap-6
-              sm:grid-cols-2
+              grid-cols-2
+              gap-3
+              sm:gap-6
               lg:grid-cols-3
               lg:gap-8
             "
@@ -529,30 +637,34 @@ const Services = () => {
                   className="
                     group
                     relative
+                    flex
+                    flex-col
                     overflow-hidden
-                    rounded-3xl
+                    rounded-2xl
                     border
                     border-white/15
-                    bg-black/20
+                    bg-black/40
                     backdrop-blur-xl
                     backdrop-saturate-150
-                    shadow-[0_20px_60px_rgba(0,0,0,0.20)]
+                    shadow-[0_20px_60px_rgba(0,0,0,0.25)]
                     transition-all
                     duration-500
-                    hover:-translate-y-2
-                    hover:border-amber-500/40
-                    hover:bg-black/25
-                    hover:shadow-[0_25px_70px_rgba(0,0,0,0.30)]
+                    sm:rounded-3xl
+                    sm:hover:-translate-y-2
+                    sm:hover:border-amber-500/40
+                    sm:hover:shadow-[0_25px_70px_rgba(0,0,0,0.35)]
                   "
                 >
 
                   {/* IMAGE */}
 
-                  <div className="relative h-56 overflow-hidden">
+                  <div className="relative h-28 overflow-hidden sm:h-56">
 
                     <img
                       src={image}
                       alt={title}
+                      loading="lazy"
+                      decoding="async"
                       className="
                         h-full
                         w-full
@@ -579,36 +691,43 @@ const Services = () => {
                     <div
                       className="
                         absolute
-                        bottom-4
-                        left-5
+                        bottom-2.5
+                        left-3
                         flex
-                        h-11
-                        w-11
+                        h-8
+                        w-8
                         items-center
                         justify-center
-                        rounded-xl
+                        rounded-lg
                         border
                         border-amber-400/40
-                        bg-black/30
+                        bg-black/40
                         text-amber-400
                         backdrop-blur-xl
+                        sm:bottom-4
+                        sm:left-5
+                        sm:h-11
+                        sm:w-11
+                        sm:rounded-xl
                       "
                     >
-                      <Icon className="h-5 w-5" />
+                      <Icon className="h-4 w-4 sm:h-5 sm:w-5" />
                     </div>
 
                   </div>
 
                   {/* CONTENT */}
 
-                  <div className="p-6 sm:p-7">
+                  <div className="flex-1 p-3.5 sm:p-7">
 
                     <h3
                       className="
                         font-serif
-                        text-xl
+                        text-[15px]
                         font-medium
+                        leading-snug
                         text-white
+                        sm:text-xl
                       "
                     >
                       {title}
@@ -616,10 +735,15 @@ const Services = () => {
 
                     <p
                       className="
-                        mt-3
-                        text-sm
-                        leading-6
-                        text-white/60
+                        mt-1.5
+                        line-clamp-3
+                        text-xs
+                        leading-5
+                        text-white/70
+                        sm:mt-3
+                        sm:line-clamp-none
+                        sm:text-sm
+                        sm:leading-6
                       "
                     >
                       {description}
@@ -645,9 +769,10 @@ const Services = () => {
           relative
           overflow-hidden
           bg-transparent
-          px-6
-          py-20
+          px-4
+          py-12
           sm:px-10
+          sm:py-20
           lg:px-16
           lg:py-28
         "
@@ -662,6 +787,7 @@ const Services = () => {
             <img
               src="https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1800&q=90"
               alt="Hotel interior"
+              loading="lazy"
               className="
                 absolute
                 inset-0
@@ -690,16 +816,17 @@ const Services = () => {
                 relative
                 z-10
                 grid
-                min-h-[600px]
                 items-center
+                sm:min-h-[560px]
+                lg:min-h-[600px]
                 lg:grid-cols-2
               "
             >
 
               <GlassPanel
                 className="
-                  m-6
-                  p-7
+                  m-4
+                  p-6
                   sm:m-10
                   sm:p-10
                   lg:m-14
@@ -707,23 +834,12 @@ const Services = () => {
                 "
               >
 
-                <p
-                  className="
-                    mb-5
-                    text-[11px]
-                    font-semibold
-                    uppercase
-                    tracking-[0.2em]
-                    text-amber-400
-                  "
-                >
-                  The ComfyStay difference
-                </p>
+                <Eyebrow className="mb-4 sm:mb-5">The ComfyStay difference</Eyebrow>
 
                 <h2
                   className="
                     font-serif
-                    text-4xl
+                    text-3xl
                     leading-tight
                     tracking-[-0.025em]
                     text-white
@@ -735,11 +851,14 @@ const Services = () => {
 
                 <p
                   className="
-                    mt-6
+                    mt-4
                     max-w-lg
-                    text-base
-                    leading-8
-                    text-white/75
+                    text-[15px]
+                    leading-7
+                    text-white/80
+                    sm:mt-6
+                    sm:text-base
+                    sm:leading-8
                   "
                 >
                   We believe the best hospitality is felt, not announced.
@@ -748,21 +867,17 @@ const Services = () => {
                   to make the day entirely your own.
                 </p>
 
-                <div className="mt-8 space-y-5">
+                <ul className="mt-6 space-y-4 sm:mt-8 sm:space-y-5">
 
-                  {[
-                    "Personally curated experiences for every guest",
-                    "Locally sourced ingredients in every meal",
-                    "Sustainable practices woven into every detail",
-                  ].map((item) => (
-                    <div
+                  {differences.map((item) => (
+                    <li
                       key={item}
                       className="flex items-start gap-3"
                     >
 
-                      <div
+                      <span
                         className="
-                          mt-1
+                          mt-0.5
                           flex
                           h-5
                           w-5
@@ -774,29 +889,17 @@ const Services = () => {
                           text-amber-400
                         "
                       >
-                        <svg
-                          className="h-3 w-3"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                          strokeWidth={3}
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="M5 13l4 4L19 7"
-                          />
-                        </svg>
-                      </div>
+                        <FiCheck className="h-3 w-3" strokeWidth={3} />
+                      </span>
 
-                      <p className="text-sm leading-6 text-white/70">
+                      <p className="text-sm leading-6 text-white/80">
                         {item}
                       </p>
 
-                    </div>
+                    </li>
                   ))}
 
-                </div>
+                </ul>
 
               </GlassPanel>
 
@@ -815,9 +918,11 @@ const Services = () => {
         className="
           relative
           bg-transparent
-          px-6
-          py-20
+          px-4
+          pb-16
+          pt-4
           sm:px-10
+          sm:py-20
           lg:px-16
           lg:py-28
         "
@@ -827,7 +932,7 @@ const Services = () => {
 
           <GlassPanel
             className="
-              p-8
+              p-6
               text-center
               sm:p-12
               lg:p-16
@@ -836,12 +941,13 @@ const Services = () => {
 
             <p
               className="
-                mb-5
+                mb-4
                 text-[11px]
                 font-semibold
                 uppercase
                 tracking-[0.2em]
                 text-amber-400
+                sm:mb-5
               "
             >
               Ready to experience luxury?
@@ -852,7 +958,7 @@ const Services = () => {
                 mx-auto
                 max-w-2xl
                 font-serif
-                text-4xl
+                text-3xl
                 leading-tight
                 tracking-[-0.025em]
                 text-white
@@ -865,18 +971,59 @@ const Services = () => {
             <p
               className="
                 mx-auto
-                mt-5
+                mt-4
                 max-w-lg
                 text-sm
                 leading-7
-                text-white/60
+                text-white/75
+                sm:mt-5
               "
             >
               Browse our collection of rooms and suites, or reach out
               to our team to plan something truly special.
             </p>
 
-            <div className="mt-10 flex justify-center">
+            <div
+              className="
+                mt-8
+                flex
+                flex-col
+                justify-center
+                gap-3
+                sm:mt-10
+                sm:flex-row
+              "
+            >
+
+              <button
+                type="button"
+                onClick={() => navigate("/rooms")}
+                className="
+                  inline-flex
+                  items-center
+                  justify-center
+                  gap-2
+                  rounded-xl
+                  bg-gradient-to-r
+                  from-amber-500
+                  to-amber-600
+                  px-8
+                  py-4
+                  text-sm
+                  font-semibold
+                  text-white
+                  shadow-[0_0_25px_rgba(245,158,11,0.3)]
+                  transition-all
+                  duration-300
+                  hover:-translate-y-0.5
+                  hover:from-amber-400
+                  hover:to-amber-500
+                "
+              >
+                Browse rooms
+
+                <FiArrowUpRight className="h-4 w-4" />
+              </button>
 
               <button
                 type="button"
@@ -884,6 +1031,7 @@ const Services = () => {
                 className="
                   inline-flex
                   items-center
+                  justify-center
                   gap-2
                   rounded-xl
                   border

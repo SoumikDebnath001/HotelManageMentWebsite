@@ -53,60 +53,60 @@ const AdminDashboard = () => {
   }
 
   return (
-    <div className="animate-in fade-in zoom-in duration-500 space-y-8">
+    <div className="animate-in fade-in zoom-in duration-500 space-y-6 sm:space-y-8">
       <div>
-        <h1 className="text-3xl font-serif font-bold text-white mb-2">Hotel Admin Dashboard</h1>
+        <h1 className="text-2xl sm:text-3xl font-serif font-bold text-white mb-2">Hotel Admin Dashboard</h1>
         <p className="text-stone-400">Welcome to your management portal. Here is an overview of your properties and staff.</p>
       </div>
       
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="rounded-2xl border border-amber-500/20 bg-black/40 backdrop-blur-md p-6 relative overflow-hidden">
-          <div className="absolute top-0 right-0 p-6 text-amber-500/10">
-            <FiHome className="h-24 w-24" />
+      <div className="grid grid-cols-2 gap-3 sm:gap-6 lg:grid-cols-4">
+        <div className="rounded-2xl border border-amber-500/20 bg-black/40 backdrop-blur-md p-4 sm:p-6 relative overflow-hidden">
+          <div className="absolute top-0 right-0 p-4 sm:p-6 text-amber-500/10">
+            <FiHome className="h-14 w-14 sm:h-24 sm:w-24" />
           </div>
           <div className="relative z-10 flex items-center justify-between text-stone-400">
-            <span className="text-xs font-semibold uppercase tracking-wider">Total Hotels</span>
+            <span className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider">Total Hotels</span>
             <FiHome className="h-5 w-5 text-amber-400" />
           </div>
-          <p className="mt-3 font-serif text-4xl font-bold text-white relative z-10">{stats.totalHotels}</p>
+          <p className="mt-3 font-serif text-2xl sm:text-4xl font-bold text-white relative z-10">{stats.totalHotels}</p>
         </div>
 
-        <div className="rounded-2xl border border-amber-500/20 bg-black/40 backdrop-blur-md p-6 relative overflow-hidden">
-          <div className="absolute top-0 right-0 p-6 text-amber-500/10">
-            <FiUsers className="h-24 w-24" />
+        <div className="rounded-2xl border border-amber-500/20 bg-black/40 backdrop-blur-md p-4 sm:p-6 relative overflow-hidden">
+          <div className="absolute top-0 right-0 p-4 sm:p-6 text-amber-500/10">
+            <FiUsers className="h-14 w-14 sm:h-24 sm:w-24" />
           </div>
           <div className="relative z-10 flex items-center justify-between text-stone-400">
-            <span className="text-xs font-semibold uppercase tracking-wider">Total Managers</span>
+            <span className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider">Total Managers</span>
             <FiUsers className="h-5 w-5 text-amber-400" />
           </div>
-          <p className="mt-3 font-serif text-4xl font-bold text-white relative z-10">{stats.totalManagers}</p>
+          <p className="mt-3 font-serif text-2xl sm:text-4xl font-bold text-white relative z-10">{stats.totalManagers}</p>
         </div>
 
-        <div className="rounded-2xl border border-amber-500/20 bg-black/40 backdrop-blur-md p-6 relative overflow-hidden">
-          <div className="absolute top-0 right-0 p-6 text-amber-500/10">
-            <FiCalendar className="h-24 w-24" />
+        <div className="rounded-2xl border border-amber-500/20 bg-black/40 backdrop-blur-md p-4 sm:p-6 relative overflow-hidden">
+          <div className="absolute top-0 right-0 p-4 sm:p-6 text-amber-500/10">
+            <FiCalendar className="h-14 w-14 sm:h-24 sm:w-24" />
           </div>
           <div className="relative z-10 flex items-center justify-between text-stone-400">
-            <span className="text-xs font-semibold uppercase tracking-wider">Total Bookings</span>
+            <span className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider">Total Bookings</span>
             <FiCalendar className="h-5 w-5 text-amber-400" />
           </div>
-          <p className="mt-3 font-serif text-4xl font-bold text-white relative z-10">{stats.totalBookings}</p>
+          <p className="mt-3 font-serif text-2xl sm:text-4xl font-bold text-white relative z-10">{stats.totalBookings}</p>
         </div>
 
-        <div className="rounded-2xl border border-amber-500/20 bg-black/40 backdrop-blur-md p-6 relative overflow-hidden">
-          <div className="absolute top-0 right-0 p-6 text-emerald-500/10">
-            <FiDollarSign className="h-24 w-24" />
+        <div className="rounded-2xl border border-amber-500/20 bg-black/40 backdrop-blur-md p-4 sm:p-6 relative overflow-hidden">
+          <div className="absolute top-0 right-0 p-4 sm:p-6 text-emerald-500/10">
+            <FiDollarSign className="h-14 w-14 sm:h-24 sm:w-24" />
           </div>
           <div className="relative z-10 flex items-center justify-between text-stone-400">
-            <span className="text-xs font-semibold uppercase tracking-wider">Total Revenue</span>
+            <span className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider">Total Revenue</span>
             <FiDollarSign className="h-5 w-5 text-emerald-400" />
           </div>
-          <p className="mt-3 font-serif text-4xl font-bold text-emerald-400 relative z-10">${stats.totalRevenue.toLocaleString()}</p>
+          <p className="mt-3 font-serif text-2xl sm:text-4xl font-bold text-emerald-400 relative z-10">₹{Number(stats.totalRevenue || 0).toLocaleString("en-IN")}</p>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="rounded-2xl border border-white/10 bg-black/40 backdrop-blur-md p-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+        <div className="rounded-2xl border border-white/10 bg-black/40 backdrop-blur-md p-4 sm:p-6">
           <h2 className="text-lg font-semibold text-white mb-4">Recent Hotels</h2>
           {stats.recentHotels.length === 0 ? (
             <p className="text-stone-400 text-sm">No hotels found.</p>
@@ -128,7 +128,7 @@ const AdminDashboard = () => {
           )}
         </div>
 
-        <div className="rounded-2xl border border-white/10 bg-black/40 backdrop-blur-md p-6">
+        <div className="rounded-2xl border border-white/10 bg-black/40 backdrop-blur-md p-4 sm:p-6">
           <h2 className="text-lg font-semibold text-white mb-4">Recent Managers</h2>
           {stats.recentManagers.length === 0 ? (
             <p className="text-stone-400 text-sm">No managers found.</p>

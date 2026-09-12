@@ -162,8 +162,8 @@ const AvailabilityCheckModal = ({ room, hotel, onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-      <div className="w-full max-w-lg rounded-3xl border border-white/10 bg-[#121212] p-8 shadow-2xl relative overflow-hidden animate-in zoom-in-95 duration-300">
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/80 backdrop-blur-sm sm:items-center sm:p-4">
+      <div className="relative max-h-[92vh] w-full max-w-lg overflow-y-auto overflow-x-hidden rounded-t-3xl border border-white/10 bg-[#121212] p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] shadow-2xl sm:rounded-3xl sm:p-8 animate-in zoom-in-95 duration-300">
         
         <div className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-emerald-500/10 blur-[80px]" />
         
@@ -174,7 +174,7 @@ const AvailabilityCheckModal = ({ room, hotel, onClose }) => {
           <FiX className="h-5 w-5" />
         </button>
 
-        <h3 className="font-serif text-2xl font-bold text-white mb-2">Book Room</h3>
+        <h3 className="font-serif text-2xl font-bold text-white mb-2 pr-10">Book Room</h3>
         <p className="text-stone-400 text-sm mb-6">
           {hotel.hotelName} • {room.roomType || `Room ${room.roomNumber}`}
         </p>

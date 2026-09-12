@@ -230,7 +230,7 @@ const Panel = ({
 
         ${
           position !== "left"
-            ? "border-l border-white/15"
+            ? "border-t border-white/15 sm:border-t-0 sm:border-l"
             : ""
         }
       `}
@@ -345,9 +345,9 @@ const Panel = ({
           panel-content-enter
           pointer-events-none
           absolute
-          bottom-8
-          left-6
-          right-6
+          bottom-4
+          left-5
+          right-16
           z-20
           text-white
 
@@ -767,7 +767,9 @@ const ThreeGirdDisplay = () => {
                 h-full
                 w-full
 
-                grid-cols-3
+                grid-rows-3
+                sm:grid-cols-3
+                sm:grid-rows-1
               "
             >
               <Panel

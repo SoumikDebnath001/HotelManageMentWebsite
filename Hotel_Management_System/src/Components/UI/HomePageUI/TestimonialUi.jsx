@@ -543,14 +543,28 @@ const TestimonialUi = () => {
           </div>
 
           {/* =================================================
-              THREE COLUMNS
+              PHONE — ONE COLUMN WITH EVERY TESTIMONIAL
+          ================================================= */}
+
+          <div className="sm:hidden">
+            <TestimonialColumn
+              cards={testimonials}
+              direction="up"
+              duration={60}
+              isVisible={isVisible}
+            />
+          </div>
+
+          {/* =================================================
+              SM+ — THREE COLUMNS
           ================================================= */}
 
           <div
             className="
-              grid
+              hidden
               grid-cols-3
               gap-3
+              sm:grid
               sm:gap-5
               lg:gap-6
             "

@@ -90,9 +90,9 @@ const SuperAdminUsersList = () => {
       </div>
 
       {/* Filters and Search */}
-      <div className="flex flex-col sm:flex-row gap-4 mb-6">
+      <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-4 sm:mb-6">
         <div className="relative flex-1">
-          <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400" />
+          <FiSearch className="pointer-events-none absolute left-4 top-1/2 z-10 -translate-y-1/2 text-stone-400" />
           <input
             type="text"
             placeholder="Search users by name or email..."
@@ -101,8 +101,8 @@ const SuperAdminUsersList = () => {
             className="w-full pl-10 pr-4 py-3 bg-black/40 border border-white/10 rounded-xl text-white placeholder:text-stone-500 focus:outline-none focus:border-amber-500 transition-colors backdrop-blur-md"
           />
         </div>
-        <div className="relative min-w-[200px]">
-          <FiFilter className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400" />
+        <div className="relative sm:min-w-[200px]">
+          <FiFilter className="pointer-events-none absolute left-4 top-1/2 z-10 -translate-y-1/2 text-stone-400" />
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}

@@ -44,3 +44,87 @@
   -ms-overflow-style: none;  /* IE and Edge */
   scrollbar-width: none;  /* Firefox */
 }
+
+/* =========================================================
+   PANEL TABLES ON PHONES
+   Admin / manager tables become stacked, labelled cards below 640px.
+   Labels come from data-label, set by Components/Layout/PanelLayout.jsx.
+   Plain (unlayered) CSS so it overrides the Tailwind utilities on the cells.
+========================================================= */
+
+@media (max-width: 639px) {
+  .panel-content .overflow-x-auto:has(> table) {
+    overflow-x: visible;
+  }
+
+  .panel-content table,
+  .panel-content table tbody {
+    display: block;
+    width: 100%;
+  }
+
+  .panel-content table thead {
+    display: none;
+  }
+
+  .panel-content table tbody {
+    display: grid;
+    gap: 0.75rem;
+    padding: 0.75rem;
+  }
+
+  .panel-content table tbody > tr {
+    display: block;
+    border: 1px solid rgb(255 255 255 / 0.1);
+    border-radius: 1rem;
+    background: rgb(255 255 255 / 0.03);
+    padding: 0.35rem 0;
+  }
+
+  .panel-content table tbody > tr > td {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: flex-end;
+    gap: 0.25rem 1rem;
+    width: auto;
+    min-width: 0;
+    padding: 0.5rem 1rem;
+    text-align: right;
+    border: 0;
+    white-space: normal;
+  }
+
+  .panel-content table tbody > tr > td::before {
+    content: attr(data-label);
+    flex-shrink: 0;
+    max-width: 40%;
+    padding-top: 0.2rem;
+    text-align: left;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgb(168 162 158);
+    margin-right: auto;
+  }
+
+  .panel-content table tbody > tr > td[data-label=""]::before {
+    display: none;
+  }
+
+  .panel-content table tbody > tr > td[data-label=""] {
+    justify-content: flex-end;
+  }
+
+  /* Cell content keeps its own alignment on the right side */
+  .panel-content table tbody > tr > td > * {
+    min-width: 0;
+  }
+
+  /* Single-cell rows (empty states, loaders) stay centred */
+  .panel-content table tbody > tr > td:only-child {
+    justify-content: center;
+    text-align: center;
+  }
+}

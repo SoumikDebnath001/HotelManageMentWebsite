@@ -147,7 +147,7 @@ const SelectField = ({ value, onChange, children, icon: Icon = FiChevronDown, cl
 );
 
 const SkeletonCard = () => (
-  <div className="h-[270px] animate-pulse rounded-2xl border border-white/5 bg-stone-900/70" />
+  <div className="h-[230px] animate-pulse rounded-2xl border border-white/5 bg-stone-900/70 sm:h-[270px]" />
 );
 
 /* =========================================================
@@ -168,7 +168,7 @@ const HotelCard = ({ hotel, rank, liked, liking, onToggleLike, onOpen }) => {
   return (
     <article
       onClick={onOpen}
-      className="group relative h-[270px] cursor-pointer overflow-hidden rounded-2xl border border-white/10 bg-stone-900 shadow-[0_10px_40px_rgba(0,0,0,0.35)] transition-all duration-300 hover:-translate-y-1 hover:border-amber-400/40 hover:shadow-[0_18px_50px_rgba(245,158,11,0.12)]"
+      className="group relative h-[230px] cursor-pointer overflow-hidden rounded-2xl border border-white/10 bg-stone-900 shadow-[0_10px_40px_rgba(0,0,0,0.35)] transition-all duration-300 hover:border-amber-400/40 hover:shadow-[0_18px_50px_rgba(245,158,11,0.12)] sm:h-[270px] sm:hover:-translate-y-1"
     >
       {/* Cover */}
       {cover ? (
@@ -181,14 +181,14 @@ const HotelCard = ({ hotel, rank, liked, liking, onToggleLike, onOpen }) => {
         />
       ) : (
         <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-stone-800 via-stone-900 to-black">
-          <span className="font-serif text-7xl font-bold text-white/10">{hotel.hotelName?.charAt(0)}</span>
+          <span className="font-serif text-5xl font-bold text-white/10 sm:text-7xl">{hotel.hotelName?.charAt(0)}</span>
         </div>
       )}
 
       <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/35 to-black/5" />
 
       {/* Rank */}
-      <div className="absolute left-4 top-4 flex h-8 w-8 items-center justify-center rounded-full bg-amber-500 text-xs font-bold text-white shadow-lg">
+      <div className="absolute left-2.5 top-2.5 flex h-6 w-6 items-center justify-center rounded-full bg-amber-500 text-[10px] font-bold text-white shadow-lg sm:left-4 sm:top-4 sm:h-8 sm:w-8 sm:text-xs">
         {rank}
       </div>
 
@@ -201,30 +201,30 @@ const HotelCard = ({ hotel, rank, liked, liking, onToggleLike, onOpen }) => {
         }}
         disabled={liking}
         title={liked ? "Remove from Liked Hotels" : "Add to Liked Hotels"}
-        className={`absolute right-4 top-4 z-10 flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-semibold backdrop-blur-md transition-all duration-300 ${
+        className={`absolute right-2.5 top-2.5 z-10 flex items-center gap-1 rounded-full border px-2 py-1 text-[11px] font-semibold backdrop-blur-md transition-all duration-300 sm:right-4 sm:top-4 sm:gap-1.5 sm:px-3 sm:py-1.5 sm:text-xs ${
           liked
             ? "border-red-500/40 bg-red-500/20 text-red-400 hover:bg-red-500/30"
             : "border-white/20 bg-black/45 text-white/85 hover:border-white/40 hover:bg-black/65 hover:text-white"
         } ${liking ? "cursor-not-allowed opacity-60" : ""}`}
       >
-        <FiHeart className={`h-4 w-4 transition-transform ${liked ? "scale-110 fill-red-500 text-red-500" : ""}`} />
+        <FiHeart className={`h-3.5 w-3.5 transition-transform sm:h-4 sm:w-4 ${liked ? "scale-110 fill-red-500 text-red-500" : ""}`} />
         {hotel.likeCount ?? 0}
       </button>
 
       {/* Info */}
-      <div className="absolute inset-x-0 bottom-0 p-5">
-        <h3 className="truncate text-xl font-bold text-white drop-shadow-md transition-colors group-hover:text-amber-200">
+      <div className="absolute inset-x-0 bottom-0 p-3 sm:p-5">
+        <h3 className="truncate text-sm font-bold text-white drop-shadow-md transition-colors group-hover:text-amber-200 sm:text-xl">
           {hotel.hotelName}
         </h3>
 
-        <div className="mt-1.5 flex items-center justify-between gap-3">
-          <p className="flex min-w-0 items-center gap-1.5 text-sm text-stone-300">
-            <FiMapPin className="h-4 w-4 shrink-0 text-amber-400" />
+        <div className="mt-1 flex flex-col gap-0.5 sm:mt-1.5 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
+          <p className="flex min-w-0 items-center gap-1 text-[11px] text-stone-300 sm:gap-1.5 sm:text-sm">
+            <FiMapPin className="h-3 w-3 shrink-0 text-amber-400 sm:h-4 sm:w-4" />
             <span className="truncate">{location}</span>
           </p>
 
           <span
-            className={`shrink-0 text-[11px] font-medium ${
+            className={`shrink-0 text-[10px] font-medium sm:text-[11px] ${
               hotel.availableRooms > 0 ? "text-emerald-400" : "text-red-400"
             }`}
           >
@@ -234,24 +234,24 @@ const HotelCard = ({ hotel, rank, liked, liking, onToggleLike, onOpen }) => {
           </span>
         </div>
 
-        <div className="mt-3 flex items-end justify-between">
-          <p className="flex items-baseline gap-1.5 text-white">
+        <div className="mt-2 flex items-end justify-between gap-2 sm:mt-3">
+          <p className="flex min-w-0 items-baseline gap-1 text-white sm:gap-1.5">
             {hasPrice ? (
               <>
-                <span className="text-2xl font-bold">₹{Number(hotel.startingPrice).toLocaleString("en-IN")}</span>
-                <span className="text-sm text-stone-400">/ night</span>
+                <span className="text-base font-bold sm:text-2xl">₹{Number(hotel.startingPrice).toLocaleString("en-IN")}</span>
+                <span className="text-[10px] text-stone-400 sm:text-sm">/ night</span>
               </>
             ) : (
-              <span className="text-sm font-medium text-stone-400">Rates on request</span>
+              <span className="text-xs font-medium text-stone-400 sm:text-sm">Rates on request</span>
             )}
           </p>
 
-          <div className="flex flex-col items-end">
-            <span className="inline-flex items-center gap-1 text-sm font-semibold text-amber-300">
-              <FiStar className="h-4 w-4 fill-amber-400 text-amber-400" />
+          <div className="flex shrink-0 flex-col items-end">
+            <span className="inline-flex items-center gap-1 text-xs font-semibold text-amber-300 sm:text-sm">
+              <FiStar className="h-3.5 w-3.5 fill-amber-400 text-amber-400 sm:h-4 sm:w-4" />
               {rating || "New"}
             </span>
-            <span className="text-[10px] text-stone-400">
+            <span className="hidden text-[10px] text-stone-400 sm:block">
               {hasReviews ? `${hotel.totalReviews} review${hotel.totalReviews > 1 ? "s" : ""}` : hotel.starRating ? `${hotel.starRating}-star hotel` : "No reviews yet"}
             </span>
           </div>
@@ -513,14 +513,14 @@ const HotelDiscovery = () => {
   else if (filters.availableOnly) activeChips.push({ key: "available", label: "Available rooms only", clear: () => updateFilter("availableOnly", false) });
 
   return (
-    <div className="animate-in fade-in zoom-in-95 duration-500 relative space-y-8">
+    <div className="animate-in fade-in zoom-in-95 duration-500 relative space-y-5 sm:space-y-8">
 
       {/* Title */}
       <div className="text-center md:mt-2">
         <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.25em] text-amber-400">
           {isTopOffers ? "Exclusive deals" : "Hotel discovery"}
         </p>
-        <h1 className="mb-2 font-serif text-3xl font-bold text-white md:text-4xl">
+        <h1 className="mb-2 font-serif text-2xl font-bold text-white sm:text-3xl md:text-4xl">
           {isTopOffers ? "Top Offers Available" : "Discover Extraordinary Stays"}
         </h1>
         <p className="text-sm text-stone-400 md:text-base">
@@ -531,17 +531,18 @@ const HotelDiscovery = () => {
       </div>
 
       {/* Filter bar */}
-      <div className="relative z-20 rounded-2xl border border-white/10 bg-stone-900/70 p-4 shadow-2xl backdrop-blur-xl sm:p-5">
+      <div className="relative z-20 rounded-2xl border border-white/10 bg-stone-900/70 p-3 shadow-2xl backdrop-blur-xl sm:p-5">
 
-        {/* Row 1: search / city / sort / toggle */}
-        <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
-          <div className="relative flex-1">
+        {/* Row 1: search / city / sort / toggle
+            Phone: [search][filters] then [city][sort]; desktop: one row */}
+        <div className="grid grid-cols-[1fr_1fr_auto] gap-2 sm:gap-3 lg:flex lg:items-center">
+          <div className="relative col-span-2 col-start-1 row-start-1 lg:flex-1">
             <FiSearch className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-stone-500" />
             <input
               type="text"
               value={searchState.text}
               onChange={(e) => setSearchState((prev) => ({ ...prev, text: e.target.value }))}
-              placeholder="Search by hotel, city, address or amenity..."
+              placeholder="Search hotels, cities, amenities..."
               className={`${inputClass} pl-12 pr-10`}
             />
             {searchState.text && (
@@ -560,7 +561,7 @@ const HotelDiscovery = () => {
             value={filters.city}
             onChange={(e) => updateFilter("city", e.target.value)}
             icon={FiMapPin}
-            className="lg:w-56"
+            className="col-start-1 row-start-2 min-w-0 lg:w-56"
           >
             <option value="">All cities</option>
             {filterOptions.cities.map((city) => (
@@ -574,7 +575,7 @@ const HotelDiscovery = () => {
           <SelectField
             value={filters.sortBy}
             onChange={(e) => updateFilter("sortBy", e.target.value)}
-            className="lg:w-52"
+            className="col-span-2 col-start-2 row-start-2 min-w-0 lg:w-52"
           >
             {SORT_OPTIONS.map((option) => (
               <option key={option.value} value={option.value}>
@@ -586,14 +587,16 @@ const HotelDiscovery = () => {
           <button
             type="button"
             onClick={() => setIsFilterOpen((prev) => !prev)}
-            className={`relative flex h-12 shrink-0 items-center justify-center gap-2 rounded-xl border px-5 text-sm font-semibold transition-all ${
+            aria-label="Filters"
+            aria-expanded={isFilterOpen}
+            className={`relative col-start-3 row-start-1 flex h-full min-h-[46px] shrink-0 items-center justify-center gap-2 rounded-xl border px-4 text-sm font-semibold transition-all sm:px-5 lg:h-12 ${
               isFilterOpen || activeFilterCount > 0
                 ? "border-amber-500/50 bg-amber-500/15 text-amber-300"
                 : "border-white/10 bg-black/40 text-stone-300 hover:bg-white/10 hover:text-white"
             }`}
           >
             <FiSliders className="h-4 w-4" />
-            Filters
+            <span className="hidden sm:inline">Filters</span>
             {activeFilterCount > 0 && (
               <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-amber-500 px-1.5 text-[11px] font-bold text-white">
                 {activeFilterCount}
@@ -739,7 +742,7 @@ const HotelDiscovery = () => {
 
       {/* Grid */}
       {loading ? (
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-2 gap-3 sm:gap-6 lg:grid-cols-3">
           {Array.from({ length: 6 }).map((_, index) => (
             <SkeletonCard key={index} />
           ))}
@@ -756,7 +759,7 @@ const HotelDiscovery = () => {
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-2 gap-3 sm:gap-6 lg:grid-cols-3">
           {hotels.map((hotel, index) => (
             <HotelCard
               key={hotel._id}
