@@ -1,4 +1,4 @@
-```js
+
 const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
@@ -17,8 +17,25 @@ const app = express();
 // Middleware
 // ================================
 
+// ALLOWED_ORIGINS: comma-separated list of frontend URLs allowed to call this API
+const allowedOrigins = (process.env.ALLOWED_ORIGINS || 'http://localhost:5173')
+  .split(',')
+  .map((origin) => origin.trim().replace(/\/+$/, ''))
+  .filter(Boolean);
+
 app.use(cors({
-  origin: '*'
+  origin: (origin, callback) => {
+    // Allow requests with no origin (Postman, curl, server-to-server)
+    if (!origin || allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    const error = new Error(`CORS: Origin ${origin} is not allowed`);
+    error.status = 403;
+    return callback(error);
+  },
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'userType'],
+  credentials: true
 }));
 
 app.use(logger('dev'));
@@ -106,5 +123,4 @@ app.listen(port, '0.0.0.0', () => {
 // ================================
 
 module.exports = app;
-```
 
